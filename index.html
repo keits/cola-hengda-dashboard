@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>恆大新建工程（A1001）各棟各樓層面積與粗清全方位互動儀表板</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Custom scrollbar and styling */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+    .badge-yard { background-color: #E2EFDA; color: #276A3C; border: 1px solid #C5E0B4; }
+    .badge-roof { background-color: #FCE4D6; color: #C65911; border: 1px solid #F8CBAD; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased p-4 md:p-8 font-sans">
+
+  <!-- Header Header -->
+  <div class="max-w-7xl mx-auto mb-6 bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full font-medium tracking-wide">可樂工程行 · 粗清報價系統</span>
+          <span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-full font-medium">CAD A1001 圖說穿透版</span>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">恆大新建住宅工程 · 各棟各樓層面積與粗清互動儀表板</h1>
+        <p class="text-slate-500 text-sm mt-1">工程地點：花蓮縣新城鄉天佑段 650-1 地號｜2 幢 11 棟 11 戶（地上 3 層 + 屋頂層）</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="1151027_恆大新建工程_各棟各樓層面積與粗清估算表.xlsx" download class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          下載 Excel 估算表
+        </a>
+        <a href="1151027_恆大新建工程_各棟各樓層面積與粗清分析報告.md" target="_blank" class="inline-flex items-center gap-1.5 bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          檢視分析報告
+        </a>
+      </div>
+    </div>
+
+    <!-- KPI Quick Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-5">
+      <div class="bg-blue-50/70 border border-blue-100 rounded-xl p-4">
+        <span class="text-xs text-blue-600 font-semibold block uppercase">全案粗清總面積</span>
+        <div class="flex items-baseline gap-1 mt-1">
+          <span class="text-2xl font-extrabold text-blue-900" id="kpi-total-ping">738.51</span>
+          <span class="text-xs text-blue-700 font-medium">坪</span>
+        </div>
+        <span class="text-[11px] text-blue-500 block mt-0.5">折合 2,441.34 ㎡</span>
+      </div>
+
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+        <span class="text-xs text-slate-500 font-semibold block uppercase">1F~3F 純室內地坪</span>
+        <div class="flex items-baseline gap-1 mt-1">
+          <span class="text-2xl font-extrabold text-slate-800">538.85</span>
+          <span class="text-xs text-slate-600 font-medium">坪</span>
+        </div>
+        <span class="text-[11px] text-slate-400 block mt-0.5">全區 11 棟室內標準層</span>
+      </div>
+
+      <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4">
+        <span class="text-xs text-emerald-700 font-semibold block uppercase">全區 11 棟後院空地</span>
+        <div class="flex items-baseline gap-1 mt-1">
+          <span class="text-2xl font-extrabold text-emerald-900">41.98</span>
+          <span class="text-xs text-emerald-700 font-medium">坪</span>
+        </div>
+        <span class="text-[11px] text-emerald-600 block mt-0.5">138.76 ㎡（草坪/透水磚）</span>
+      </div>
+
+      <div class="bg-orange-50/80 border border-orange-200 rounded-xl p-4">
+        <span class="text-xs text-orange-700 font-semibold block uppercase">RF 屋頂（無梯需爬鷹架）</span>
+        <div class="flex items-baseline gap-1 mt-1">
+          <span class="text-2xl font-extrabold text-orange-900">157.68</span>
+          <span class="text-xs text-orange-700 font-medium">坪</span>
+        </div>
+        <span class="text-[11px] text-orange-600 block mt-0.5">全區 11 棟頂樓平頂</span>
+      </div>
+
+      <div class="bg-purple-50/70 border border-purple-200 rounded-xl p-4">
+        <span class="text-xs text-purple-700 font-semibold block uppercase">實體樓梯總階數</span>
+        <div class="flex items-baseline gap-1 mt-1">
+          <span class="text-2xl font-extrabold text-purple-900">341</span>
+          <span class="text-xs text-purple-700 font-medium">階</span>
+        </div>
+        <span class="text-[11px] text-purple-600 block mt-0.5">1F→3F 兩段式混凝土梯</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left 7 Cols: Unit & Floor Breakdown -->
+    <div class="lg:col-span-7 space-y-6">
+
+      <!-- Interactive Tab Selector -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            各棟戶型幾何尺寸與樓層明細
+          </h2>
+          <span class="text-xs text-slate-400">點擊切換查看單棟算式</span>
+        </div>
+
+        <!-- Buttons for Switching Units -->
+        <div class="flex flex-wrap gap-2 border-b border-slate-100 pb-3 mb-4">
+          <button id="btn-tab-A" onclick="switchUnit('A')" class="px-3.5 py-1.5 text-xs rounded-lg transition font-medium bg-blue-600 text-white shadow-sm">A 棟 (A型大進深)</button>
+          <button id="btn-tab-B" onclick="switchUnit('B')" class="px-3.5 py-1.5 text-xs rounded-lg transition font-medium bg-slate-100 text-slate-700 hover:bg-slate-200">B 棟 (中段後院)</button>
+          <button id="btn-tab-C" onclick="switchUnit('C')" class="px-3.5 py-1.5 text-xs rounded-lg transition font-medium bg-slate-100 text-slate-700 hover:bg-slate-200">C 棟 (超深後院)</button>
+          <button id="btn-tab-D" onclick="switchUnit('D')" class="px-3.5 py-1.5 text-xs rounded-lg transition font-medium bg-slate-100 text-slate-700 hover:bg-slate-200">D~F 棟 (B型標準)</button>
+          <button id="btn-tab-G" onclick="switchUnit('G')" class="px-3.5 py-1.5 text-xs rounded-lg transition font-medium bg-slate-100 text-slate-700 hover:bg-slate-200">G~J 棟 (C型連棟)</button>
+          <button id="btn-tab-K" onclick="switchUnit('K')" class="px-3.5 py-1.5 text-xs rounded-lg transition font-medium bg-slate-100 text-slate-700 hover:bg-slate-200">K 棟 (D型大邊間)</button>
+        </div>
+
+        <!-- Dynamic Content Area -->
+        <div id="unit-detail-panel" class="space-y-4">
+          <!-- Filled dynamically by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Full 11-Unit Comparison Table -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+        <h2 class="text-base font-bold text-slate-800 mb-3 flex items-center justify-between">
+          <span class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            全區 11 棟粗清面積總清冊
+          </span>
+          <span class="text-xs text-slate-400 font-normal">單位：坪</span>
+        </h2>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                <th class="py-2.5 px-3">棟別</th>
+                <th class="py-2.5 px-2">戶型</th>
+                <th class="py-2.5 px-2 text-right">1F 室內</th>
+                <th class="py-2.5 px-2 text-right text-emerald-700 bg-emerald-50/50">1F 後院</th>
+                <th class="py-2.5 px-2 text-right">2F 陽台</th>
+                <th class="py-2.5 px-2 text-right">3F 陽台</th>
+                <th class="py-2.5 px-2 text-right text-orange-700 bg-orange-50/50">RF 屋頂</th>
+                <th class="py-2.5 px-3 text-right font-bold text-blue-900 bg-blue-50/50">單棟合計</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-700">
+              <tr class="hover:bg-slate-50 transition"><td class="py-2 px-3 font-bold text-blue-700">A 棟</td><td class="py-2 px-2 text-slate-500">A型</td><td class="py-2 px-2 text-right">20.50</td><td class="py-2 px-2 text-right text-emerald-700 font-medium bg-emerald-50/30">6.53</td><td class="py-2 px-2 text-right">18.05</td><td class="py-2 px-2 text-right">18.05</td><td class="py-2 px-2 text-right text-orange-700 bg-orange-50/30">16.40</td><td class="py-2 px-3 text-right font-bold text-blue-900 bg-blue-50/30">79.53</td></tr>
+              <tr class="hover:bg-slate-50 transition"><td class="py-2 px-3 font-bold text-blue-700">B 棟</td><td class="py-2 px-2 text-slate-500">A型</td><td class="py-2 px-2 text-right">20.50</td><td class="py-2 px-2 text-right text-emerald-700 font-medium bg-emerald-50/30">7.39</td><td class="py-2 px-2 text-right">18.05</td><td class="py-2 px-2 text-right">18.05</td><td class="py-2 px-2 text-right text-orange-700 bg-orange-50/30">16.40</td><td class="py-2 px-3 text-right font-bold text-blue-900 bg-blue-50/30">80.39</td></tr>
+              <tr class="hover:bg-slate-50 transition"><td class="py-2 px-3 font-bold text-blue-700">C 棟</td><td class="py-2 px-2 text-slate-500">A型</td><td class="py-2 px-2 text-right">20.50</td><td class="py-2 px-2 text-right text-emerald-700 font-medium bg-emerald-50/30">8.24</td><td class="py-2 px-2 text-right">18.05</td><td class="py-2 px-2 text-right">18.05</td><td class="py-2 px-2 text-right text-orange-700 bg-orange-50/30">16.40</td><td class="py-2 px-3 text-right font-bold text-blue-900 bg-blue-50/30">81.24</td></tr>
+              <tr class="hover:bg-slate-50 transition"><td class="py-2 px-3 font-bold text-slate-800">D 棟</td><td class="py-2 px-2 text-slate-500">B型</td><td class="py-2 px-2 text-right">15.25</td><td class="py-2 px-2 text-right text-emerald-700 font-medium bg-emerald-50/30">4.47</td><td class="py-2 px-2 text-right">14.66</td><td class="py-2 px-2 text-right">14.66</td><td class="py-2 px-2 text-right text-orange-700 bg-orange-50/30">13.13</td><td class="py-2 px-3 text-right font-bold text-slate-900 bg-blue-50/30">62.17</td></tr>
+              <tr class="hover:bg-slate-50 transition"><td class="py-2 px-3 font-bold text-slate-800">E 棟</td><td class="py-2 px-2 text-slate-500">B型</td><td class="py-2 px-2 text-right">15.25</td><td class="py-2 px-2 text-right text-emerald-700 font-medium bg-emerald-50/30">3.91</td><td class="py-2 px-2 text-right">14.66</td><td class="py-2 px-2 text-right">14.66</td><td class="py-2 px-2 text-right text-orange-700 bg-orange-50/30">13.13</td><td class="py-2 px-3 text-right font-bold text-slate-900 bg-blue-50/30">61.61</td></tr>
+              <tr class="hover:bg-slate-50 transition"><td class="py-2 px-3 font-bold text-slate-800">F 棟</td><td class="py-2 px-2 text-slate-500">B型</td><td class="py-2 px-2 text-right">15.25</td><td class="py-2 px-2 text-right text-emerald-700 font-medium bg-emerald-50/30">3.36</td><td class="py-2 px-2 text-right">14.66</td><td class="py-2 px-2 text-right">14.66</td><td class="py-2 px-2 text-right text-orange-700 bg-orange-50/30">13.13</td><td class="py-2 px-3 text-right font-bold text-slate-900 bg-blue-50/30">61.06</td></tr>
+              <tr class="hover:bg-slate-50 transition"><td class="py-2 px-3 font-bold text-slate-800">G 棟</td><td class="py-2 px-2 text-slate-500">C型</td><td class="py-2 px-2 text-right">15.35</td><td class="py-2 px-2 text-right text-emerald-700 font-medium bg-emerald-50/30">2.71</td><td class="py-2 px-2 text-right">14.92</td><td class="py-2 px-2 text-right">14.92</td><td class="py-2 px-2 text-right text-orange-700 bg-orange-50/30">13.37</td><td class="py-2 px-3 text-right font-bold text-slate-900 bg-blue-50/30">61.27</td></tr>
+              <tr class="hover:bg-slate-50 transition"><td class="py-2 px-3 font-bold text-slate-800">H 棟</td><td class="py-2 px-2 text-slate-500">C型</td><td class="py-2 px-2 text-right">15.35</td><td class="py-2 px-2 text-right text-emerald-700 font-medium bg-emerald-50/30">2.20</td><td class="py-2 px-2 text-right">14.92</td><td class="py-2 px-2 text-right">14.92</td><td class="py-2 px-2 text-right text-orange-700 bg-orange-50/30">13.37</td><td class="py-2 px-3 text-right font-bold text-slate-900 bg-blue-50/30">60.76</td></tr>
+              <tr class="hover:bg-slate-50 transition"><td class="py-2 px-3 font-bold text-slate-800">I 棟</td><td class="py-2 px-2 text-slate-500">C型</td><td class="py-2 px-2 text-right">15.35</td><td class="py-2 px-2 text-right text-emerald-700 font-medium bg-emerald-50/30">1.57</td><td class="py-2 px-2 text-right">14.92</td><td class="py-2 px-2 text-right">14.92</td><td class="py-2 px-2 text-right text-orange-700 bg-orange-50/30">13.37</td><td class="py-2 px-3 text-right font-bold text-slate-900 bg-blue-50/30">60.13</td></tr>
+              <tr class="hover:bg-slate-50 transition"><td class="py-2 px-3 font-bold text-slate-800">J 棟</td><td class="py-2 px-2 text-slate-500">C型</td><td class="py-2 px-2 text-right">15.35</td><td class="py-2 px-2 text-right text-emerald-700 font-medium bg-emerald-50/30">0.93</td><td class="py-2 px-2 text-right">14.92</td><td class="py-2 px-2 text-right">14.92</td><td class="py-2 px-2 text-right text-orange-700 bg-orange-50/30">13.37</td><td class="py-2 px-3 text-right font-bold text-slate-900 bg-blue-50/30">59.49</td></tr>
+              <tr class="hover:bg-slate-50 transition"><td class="py-2 px-3 font-bold text-amber-700">K 棟</td><td class="py-2 px-2 text-slate-500">D型邊間</td><td class="py-2 px-2 text-right">15.35</td><td class="py-2 px-2 text-right text-emerald-700 font-medium bg-emerald-50/30">0.67</td><td class="py-2 px-2 text-right">16.87</td><td class="py-2 px-2 text-right">16.87</td><td class="py-2 px-2 text-right text-orange-700 bg-orange-50/30">15.34</td><td class="py-2 px-3 text-right font-bold text-amber-900 bg-blue-50/30">65.10</td></tr>
+            </tbody>
+            <tfoot>
+              <tr class="bg-blue-900 text-white font-bold">
+                <td class="py-2.5 px-3">全案合計</td>
+                <td class="py-2.5 px-2">11 棟</td>
+                <td class="py-2.5 px-2 text-right">189.65</td>
+                <td class="py-2.5 px-2 text-right text-emerald-300">41.98</td>
+                <td class="py-2.5 px-2 text-right">174.60</td>
+                <td class="py-2.5 px-2 text-right">174.60</td>
+                <td class="py-2.5 px-2 text-right text-orange-300">157.68</td>
+                <td class="py-2.5 px-3 text-right text-amber-300 font-extrabold text-sm">738.51 坪</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right 5 Cols: Turnkey Calculator & Field Insights -->
+    <div class="lg:col-span-5 space-y-6">
+
+      <!-- Dynamic Price Calculator (Turnkey Uniform Rate) -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <div>
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wider block">統包專用 · 截長補短精算</span>
+            <h2 class="text-lg font-bold text-slate-900">即時動態粗清報價試算器</h2>
+          </div>
+          <span class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-1 rounded-full">統包單一坪價制</span>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <!-- Turnkey Pricing Model Explanation -->
+          <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-3 text-slate-700 leading-relaxed">
+            <span class="font-bold text-blue-900 block mb-1">💡 統包計價核心：全案總坪數統一單價，內部截長補短</span>
+            統包營造廠依全區總面積 <span class="font-bold text-blue-800">738.51 坪</span> 統一乘上單價。我們以室內大面地坪的作業利潤，去填補樓梯打鑿碎石裝袋（400袋）與無樓梯爬鷹架上屋頂的高耗損工時。
+          </div>
+
+          <!-- Parameter 1: Uniform Price per Ping Slider -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-slate-800 font-bold text-sm">統包每坪統一單價 (元/坪)</label>
+              <div class="flex items-baseline gap-1">
+                <span class="font-mono font-extrabold text-blue-700 text-xl" id="val-uniform-price">400</span>
+                <span class="text-xs text-slate-500 font-medium">元 / 坪</span>
+              </div>
+            </div>
+            <input type="range" id="input-uniform-price" min="200" max="650" step="10" value="400" oninput="calculateQuote()" class="w-full accent-blue-600 cursor-pointer h-2 bg-slate-200 rounded-lg">
+            
+            <!-- Quick Preset Buttons -->
+            <div class="grid grid-cols-4 gap-1.5 mt-2">
+              <button type="button" onclick="setUniformPrice(300)" class="py-1.5 px-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded text-[11px] font-medium text-slate-600 text-center transition">300 (純粗掃)</button>
+              <button type="button" onclick="setUniformPrice(350)" class="py-1.5 px-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded text-[11px] font-medium text-slate-600 text-center transition">350 (行情底)</button>
+              <button type="button" onclick="setUniformPrice(400)" class="py-1.5 px-1 bg-blue-100 text-blue-800 font-bold rounded text-[11px] text-center transition">400 (推薦價)</button>
+              <button type="button" onclick="setUniformPrice(450)" class="py-1.5 px-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded text-[11px] font-medium text-slate-600 text-center transition">450 (厚利價)</button>
+            </div>
+          </div>
+
+          <!-- Parameter 2: Waste Hauling Mode -->
+          <div class="border-t border-slate-100 pt-3">
+            <div class="flex justify-between items-center mb-2">
+              <label class="text-slate-800 font-bold">營建廢棄物清運方式</label>
+              <span class="text-[11px] text-slate-400">泥渣裝袋與下腳料</span>
+            </div>
+            
+            <div class="space-y-2">
+              <label class="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition">
+                <input type="radio" name="waste-mode" value="client" onchange="calculateQuote()" class="text-blue-600 accent-blue-600">
+                <div class="flex-1">
+                  <span class="font-bold text-slate-800 block text-xs">僅負責現場打包集中（營造自叫車載運）</span>
+                  <span class="text-[10px] text-slate-500">碎石裝袋後集中堆置於 1F 門口指定區，清運車資 $0</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2 p-2.5 bg-blue-50/60 border border-blue-200 rounded-lg cursor-pointer hover:bg-blue-50 transition">
+                <input type="radio" name="waste-mode" value="include" checked onchange="calculateQuote()" class="text-blue-600 accent-blue-600">
+                <div class="flex-1">
+                  <span class="font-bold text-blue-900 block text-xs">可樂工程行統包載運離場（合規掩埋場）</span>
+                  <span class="text-[10px] text-slate-500">含 3.5T 車趟車資、搬工司機、進場合法過磅處理費</span>
+                </div>
+              </label>
+            </div>
+
+            <!-- Hauling Options when included -->
+            <div id="truck-hauling-controls" class="grid grid-cols-2 gap-3 mt-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <div>
+                <span class="text-[11px] text-slate-500 block mb-1">3.5T 貨車預估車次</span>
+                <select id="input-waste-trucks" onchange="calculateQuote()" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800">
+                  <option value="6">6 車 (輕度清運)</option>
+                  <option value="10" selected>10 車 (重度泥石預估)</option>
+                  <option value="12">12 車 (充裕預算)</option>
+                  <option value="15">15 車 (連戶外垃圾全包)</option>
+                </select>
+              </div>
+              <div>
+                <span class="text-[11px] text-slate-500 block mb-1">花蓮行情單車清運費 (元)</span>
+                <input type="number" id="input-truck-fee" value="4500" step="500" oninput="calculateQuote()" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800">
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Calculation Result Box -->
+          <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 text-white rounded-xl p-4 mt-4 shadow-lg border border-slate-700">
+            <div class="flex justify-between items-center text-xs text-slate-300 pb-2 border-b border-slate-700/80">
+              <span>統包報價未稅總額 (11 棟共 738.51 坪)</span>
+              <span class="text-[11px] text-amber-400 font-semibold" id="calc-avg-unit">單戶平均: $0 元</span>
+            </div>
+            
+            <div class="my-3 flex items-baseline justify-between">
+              <span class="text-xs text-slate-400">總承攬請款額</span>
+              <div class="text-right">
+                <span class="text-3xl font-black text-amber-400 tracking-tight" id="calc-grand-total">$0</span>
+                <span class="text-xs text-slate-300 ml-1">元 (未稅)</span>
+              </div>
+            </div>
+
+            <!-- Cost & Hedging Analysis -->
+            <div class="text-[11px] text-slate-300 space-y-1.5 pt-2.5 border-t border-slate-700/80">
+              <div class="flex justify-between">
+                <span>· 粗清工程款 (738.51 坪 × <span id="lbl-applied-rate" class="font-bold text-amber-300">400</span> 元)</span>
+                <span id="calc-clean-total" class="font-bold text-white font-mono">$0</span>
+              </div>
+              <div class="flex justify-between">
+                <span>· 廢棄物清運載運費 (<span id="lbl-truck-count">10</span> 車)</span>
+                <span id="calc-waste-total" class="font-bold text-amber-300 font-mono">$0</span>
+              </div>
+              <div class="flex justify-between pt-1 border-t border-slate-700/50 text-[10px] text-emerald-400">
+                <span>· 換算含清運之實際綜合單價</span>
+                <span id="lbl-effective-rate" class="font-bold font-mono">約 0 元 / 坪</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Turnkey Hedging Health Card -->
+          <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl space-y-1.5 text-[11px]">
+            <span class="font-bold text-emerald-900 block flex items-center gap-1">
+              <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              截長補短利潤分析
+            </span>
+            <div class="text-emerald-800 leading-relaxed">
+              · <strong>截長盈餘區</strong>：室內 538.85 坪大面開闊平整，工班日產能高，預估實質成本僅約 $180~$220/坪，每坪溢收約 $180~$220 元。<br>
+              · <strong>補短支出區</strong>：屋頂無梯爬鷹架 (157.68 坪) 與樓梯 341 階打鑿碎石（需裝 400 袋），由室內盈餘全額補足後，全案依然維持 <strong id="lbl-profit-rate" class="text-emerald-900 font-extrabold text-xs">32%~38%</strong> 之健康毛利率！
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Field Photo Insights -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+        <h2 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+          <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          現場實勘相片之重大工安防禦
+        </h2>
+        
+        <div class="space-y-3 text-xs text-slate-600">
+          <div class="p-3 bg-red-50 border border-red-200 rounded-xl">
+            <span class="font-bold text-red-900 block mb-1">⚠️ 警報 1：樓梯堆滿 5~10 公分打鑿碎石塊（照片 10、19）</span>
+            <p class="text-red-700 leading-relaxed">
+              現場樓梯為清水 RC 原始階梯，平台與梯階堆積厚重混凝土打除塊與鋼筋碎屑。絕不能用掃把掃，必須工班自備鐵鍬、平鏟、十字鎬人工鏟進麻布米袋（預估每戶需裝 30~50 袋）。
+            </p>
+          </div>
+
+          <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+            <span class="font-bold text-amber-900 block mb-1">⚡ 警報 2：屋頂無實體梯，搶在「拆鷹架前」進場（照片 03、04）</span>
+            <p class="text-amber-800 leading-relaxed">
+              整批 11 棟外牆目前被雙排鋼管鷹架包覆直通頂樓。一旦營造拆鷹架，屋頂將只剩 3F 天花板狹小檢修人孔，重型吸塵器與吊料根本無法進出！屋頂粗清必須搶在鷹架拆除前完成！
+            </p>
+          </div>
+
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+            <span class="font-bold text-slate-800 block mb-1">📋 營造與工務資訊核對（照片 01）</span>
+            <p class="text-slate-600 leading-relaxed">
+              承造營造：泗維營造工程有限公司｜工地負責人：陳靖宏（0988-623319）｜執照字號：114A0172 號（2 幢 11 棟 11 戶，地上 3 層）。
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Interactive JavaScript Logic -->
+  <script>
+    // Data definition for units
+    const unitData = {
+      'A': {
+        name: 'A 棟 (A型戶)',
+        type: 'A型大進深戶型 (面寬4.4m / 室內進深15.68m)',
+        totalPing: 79.53,
+        totalM2: 262.88,
+        floors: [
+          { name: '1F 室內地坪', formula: '4.4 * 15.675 - 1.825 * 2.425 = 64.54㎡ (+加計=67.77㎡)', ping: 20.50, m2: 67.77, note: '客餐廳、廚房、進出動線' },
+          { name: '1F 後院空地', formula: '4.25 * (4.744 + 5.408) / 2 = 21.57㎡', ping: 6.53, m2: 21.57, isYard: true, note: '斜角後院、透水磚預定地泥作碎屑清理' },
+          { name: '2F 樓地板+陽台', formula: '室內 54.23㎡ + 前陽台 5.44㎡ = 59.67㎡', ping: 18.05, m2: 59.67, note: '主臥、次臥、衛浴、前陽台窗溝槽' },
+          { name: '3F 樓地板+陽台', formula: '室內 54.23㎡ + 前陽台 5.44㎡ = 59.67㎡', ping: 18.05, m2: 59.67, note: '臥室、衛浴、前陽台泥作殘膠' },
+          { name: 'RF 屋頂平頂', formula: '水箱周邊+露台平頂 = 54.20㎡', ping: 16.40, m2: 54.20, isRoof: true, note: '【高難度】無實體梯！需走外牆鷹架攀爬吊掛清運' }
+        ]
+      },
+      'B': {
+        name: 'B 棟 (A型戶)',
+        type: 'A型戶型 (中段後院 / 涵蓋雨水貯集槽上方)',
+        totalPing: 80.39,
+        totalM2: 265.74,
+        floors: [
+          { name: '1F 室內地坪', formula: '67.77㎡', ping: 20.50, m2: 67.77, note: '客餐廳、廚房' },
+          { name: '1F 後院空地', formula: '4.25 * (5.430 + 6.066) / 2 = 24.43㎡', ping: 7.39, m2: 24.43, isYard: true, note: '中段後院、雨水貯集槽36.62m3上方泥渣' },
+          { name: '2F 樓地板+陽台', formula: '59.67㎡', ping: 18.05, m2: 59.67, note: '雙臥室、前陽台' },
+          { name: '3F 樓地板+陽台', formula: '59.67㎡', ping: 18.05, m2: 59.67, note: '臥室、前陽台' },
+          { name: 'RF 屋頂平頂', formula: '54.20㎡', ping: 16.40, m2: 54.20, isRoof: true, note: '無實體梯！爬外牆鷹架清水箱落葉下腳料' }
+        ]
+      },
+      'C': {
+        name: 'C 棟 (A型戶)',
+        type: 'A型戶型 (後院進深最深達 6.73m)',
+        totalPing: 81.24,
+        totalM2: 268.55,
+        floors: [
+          { name: '1F 室內地坪', formula: '67.77㎡', ping: 20.50, m2: 67.77, note: '客餐廳、廚房' },
+          { name: '1F 後院空地', formula: '4.25 * (6.091 + 6.727) / 2 = 27.24㎡', ping: 8.24, m2: 27.24, isYard: true, note: '大進深後院、臨圍牆邊角泥渣' },
+          { name: '2F 樓地板+陽台', formula: '59.67㎡', ping: 18.05, m2: 59.67, note: '臥室、衛浴、陽台' },
+          { name: '3F 樓地板+陽台', formula: '59.67㎡', ping: 18.05, m2: 59.67, note: '臥室、陽台' },
+          { name: 'RF 屋頂平頂', formula: '54.20㎡', ping: 16.40, m2: 54.20, isRoof: true, note: '無實體梯！爬鷹架清頂樓大平頂' }
+        ]
+      },
+      'D': {
+        name: 'D~F 棟 (B型標準戶型)',
+        type: 'B型標準透天 (面寬4.3m / 室內進深10.10m，共3戶)',
+        totalPing: 62.17,
+        totalM2: 205.51,
+        floors: [
+          { name: '1F 室內地坪', formula: '4.3 * 10.10 = 43.43㎡ (+加計=50.40㎡)', ping: 15.25, m2: 50.40, note: '客餐廳、進出動線' },
+          { name: '1F 後院空地', formula: 'D棟: 14.77㎡ (4.47坪) / E棟: 12.93㎡ (3.91坪) / F棟: 11.11㎡ (3.36坪)', ping: 4.47, m2: 14.77, isYard: true, note: '後院斜角圍牆空地清除泥作雜物' },
+          { name: '2F 樓地板+陽台', formula: '室內 43.43㎡ + 前陽台 5.04㎡ = 48.47㎡', ping: 14.66, m2: 48.47, note: '雙臥室、衛浴、陽台窗溝' },
+          { name: '3F 樓地板+陽台', formula: '室內 43.43㎡ + 前陽台 5.04㎡ = 48.47㎡', ping: 14.66, m2: 48.47, note: '臥室、衛浴、陽台' },
+          { name: 'RF 屋頂平頂', formula: '43.40㎡', ping: 13.13, m2: 43.40, isRoof: true, note: '無實體梯！爬鷹架上屋頂清防漏水孔' }
+        ]
+      },
+      'G': {
+        name: 'G~J 棟 (C型標準連棟)',
+        type: 'C型標準連棟 (面寬4.3m / 室內進深10.30m，共4戶)',
+        totalPing: 61.27,
+        totalM2: 202.59,
+        floors: [
+          { name: '1F 室內地坪', formula: '4.3 * 10.30 = 44.29㎡ (+加計=50.76㎡)', ping: 15.35, m2: 50.76, note: '客餐廳、廚房空間' },
+          { name: '1F 後院空地', formula: 'G棟: 8.97㎡ (2.71坪) ~ J棟: 3.06㎡ (0.93坪)', ping: 2.71, m2: 8.97, isYard: true, note: '後院斜角空地、泥作碎塊整平' },
+          { name: '2F 樓地板+陽台', formula: '室內 44.29㎡ + 陽台 5.04㎡ = 49.33㎡', ping: 14.92, m2: 49.33, note: '房間、衛浴間、陽台' },
+          { name: '3F 樓地板+陽台', formula: '室內 44.29㎡ + 陽台 5.04㎡ = 49.33㎡', ping: 14.92, m2: 49.33, note: '臥室地磚粉塵清除' },
+          { name: 'RF 屋頂平頂', formula: '44.20㎡', ping: 13.37, m2: 44.20, isRoof: true, note: '無實體梯！爬鷹架上頂樓清運' }
+        ]
+      },
+      'K': {
+        name: 'K 棟 (D型大面寬獨立邊間)',
+        type: 'D型大面寬邊間 (面寬5.5m / 室內進深8.50m，共1戶)',
+        totalPing: 65.10,
+        totalM2: 215.25,
+        floors: [
+          { name: '1F 室內地坪', formula: '5.5 * 8.50 = 46.75㎡ (+加計=50.75㎡)', ping: 15.35, m2: 50.75, note: '大面寬客餐廳、側院動線' },
+          { name: '1F 側後空地', formula: '5.5 * (0.684 + 0.122) / 2 = 2.22㎡', ping: 0.67, m2: 2.22, isYard: true, note: '邊間圍牆轉角收尾空地' },
+          { name: '2F 樓地板+陽台', formula: '室內 50.75㎡ + 陽台 5.04㎡ = 55.79㎡', ping: 16.87, m2: 55.79, note: '雙面採光大臥室、窗溝槽' },
+          { name: '3F 樓地板+陽台', formula: '室內 50.75㎡ + 陽台 5.04㎡ = 55.79㎡', ping: 16.87, m2: 55.79, note: '高樓層房間、大陽台' },
+          { name: 'RF 屋頂平頂', formula: '50.70㎡', ping: 15.34, m2: 50.70, isRoof: true, note: '無實體梯！邊間大平頂需爬鷹架吊料' }
+        ]
+      }
+    };
+
+    function switchUnit(unitKey) {
+      ['A','B','C','D','G','K'].forEach(k => {
+        const btn = document.getElementById('btn-tab-' + k);
+        if (btn) {
+          if (k === unitKey) {
+            btn.className = 'px-3.5 py-1.5 text-xs rounded-lg transition font-medium bg-blue-600 text-white shadow-sm';
+          } else {
+            btn.className = 'px-3.5 py-1.5 text-xs rounded-lg transition font-medium bg-slate-100 text-slate-700 hover:bg-slate-200';
+          }
+        }
+      });
+
+      const u = unitData[unitKey];
+      if (!u) return;
+
+      let rowsHtml = '';
+      u.floors.forEach(f => {
+        let tag = '';
+        if (f.isYard) {
+          tag = '<span class="badge-yard text-[10px] px-1.5 py-0.5 rounded font-semibold ml-1.5">後院空地</span>';
+        } else if (f.isRoof) {
+          tag = '<span class="badge-roof text-[10px] px-1.5 py-0.5 rounded font-semibold ml-1.5">無梯需爬鷹架</span>';
+        }
+
+        rowsHtml += `
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="py-2.5 px-3 font-semibold text-slate-800">${f.name} ${tag}</td>
+            <td class="py-2.5 px-2 text-slate-500 font-mono text-[11px]">${f.formula}</td>
+            <td class="py-2.5 px-2 text-right font-bold text-slate-900">${f.ping.toFixed(2)} 坪</td>
+            <td class="py-2.5 px-2 text-right text-slate-400 text-[11px]">${f.m2.toFixed(2)} ㎡</td>
+            <td class="py-2.5 px-3 text-slate-600 text-[11px]">${f.note}</td>
+          </tr>
+        `;
+      });
+
+      const html = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-2 border-b border-slate-100 gap-2">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">${u.name}</h3>
+            <span class="text-xs text-slate-500">${u.type}</span>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-slate-400 block">單棟合計粗清面積</span>
+            <span class="text-xl font-extrabold text-blue-700">${u.totalPing.toFixed(2)} 坪</span>
+            <span class="text-xs text-slate-500">(${u.totalM2.toFixed(2)} ㎡)</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
+                <th class="py-2 px-3">樓層區域</th>
+                <th class="py-2 px-2">圖面原始算式 / 尺寸</th>
+                <th class="py-2 px-2 text-right">施作坪數</th>
+                <th class="py-2 px-2 text-right">公尺 (㎡)</th>
+                <th class="py-2 px-3">施工注意事項</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      const detailPanel = document.getElementById('unit-detail-panel');
+      if (detailPanel) detailPanel.innerHTML = html;
+    }
+
+    // Dynamic Price Calculator for Turnkey Uniform Rate
+    function setUniformPrice(val) {
+      const input = document.getElementById('input-uniform-price');
+      if (input) {
+        input.value = val;
+        calculateQuote();
+      }
+    }
+
+    function calculateQuote() {
+      try {
+        const inputRate = document.getElementById('input-uniform-price');
+        if (!inputRate) return;
+
+        const uniformRate = parseFloat(inputRate.value) || 400;
+        
+        const valRateEl = document.getElementById('val-uniform-price');
+        if (valRateEl) valRateEl.innerText = uniformRate;
+
+        const lblAppliedEl = document.getElementById('lbl-applied-rate');
+        if (lblAppliedEl) lblAppliedEl.innerText = uniformRate;
+
+        // Check waste hauling mode
+        const wasteModes = document.getElementsByName('waste-mode');
+        let mode = 'include';
+        for (let i = 0; i < wasteModes.length; i++) {
+          if (wasteModes[i].checked) mode = wasteModes[i].value;
+        }
+
+        const haulingCtrl = document.getElementById('truck-hauling-controls');
+        let trucks = 0;
+        let truckFee = 0;
+        let wasteCost = 0;
+
+        if (mode === 'include') {
+          if (haulingCtrl) haulingCtrl.style.display = 'grid';
+          const trucksEl = document.getElementById('input-waste-trucks');
+          const feeEl = document.getElementById('input-truck-fee');
+          trucks = trucksEl ? parseInt(trucksEl.value) : 10;
+          truckFee = feeEl ? parseFloat(feeEl.value) : 4500;
+          wasteCost = trucks * truckFee;
+          
+          const lblTruckEl = document.getElementById('lbl-truck-count');
+          if (lblTruckEl) lblTruckEl.innerText = trucks;
+        } else {
+          if (haulingCtrl) haulingCtrl.style.display = 'none';
+          wasteCost = 0;
+          const lblTruckEl = document.getElementById('lbl-truck-count');
+          if (lblTruckEl) lblTruckEl.innerText = '0 (營造自理)';
+        }
+
+        const totalPing = 738.51;
+        const cleanCost = totalPing * uniformRate;
+        const grandTotal = cleanCost + wasteCost;
+        const avgUnit = grandTotal / 11;
+        const effectiveRate = grandTotal / totalPing;
+
+        const cleanTotalEl = document.getElementById('calc-clean-total');
+        if (cleanTotalEl) cleanTotalEl.innerText = '$' + Math.round(cleanCost).toLocaleString();
+
+        const wasteTotalEl = document.getElementById('calc-waste-total');
+        if (wasteTotalEl) wasteTotalEl.innerText = '$' + Math.round(wasteCost).toLocaleString();
+
+        const grandTotalEl = document.getElementById('calc-grand-total');
+        if (grandTotalEl) grandTotalEl.innerText = '$' + Math.round(grandTotal).toLocaleString();
+
+        const avgUnitEl = document.getElementById('calc-avg-unit');
+        if (avgUnitEl) avgUnitEl.innerText = '單戶平均: $' + Math.round(avgUnit).toLocaleString() + ' 元';
+
+        const effRateEl = document.getElementById('lbl-effective-rate');
+        if (effRateEl) effRateEl.innerText = '約 ' + Math.round(effectiveRate) + ' 元 / 坪';
+
+        // Profit estimate
+        const profitRateEl = document.getElementById('lbl-profit-rate');
+        if (profitRateEl) {
+          if (uniformRate >= 450) {
+            profitRateEl.innerText = '40%~46%';
+          } else if (uniformRate >= 400) {
+            profitRateEl.innerText = '32%~38%';
+          } else if (uniformRate >= 350) {
+            profitRateEl.innerText = '25%~30%';
+          } else {
+            profitRateEl.innerText = '15%~20%';
+          }
+        }
+      } catch (err) {
+        console.error('Error in calculateQuote:', err);
+      }
+    }
+
+    window.onload = function() {
+      switchUnit('A');
+      calculateQuote();
+    };
+  </script>
+</body>
+</html>
