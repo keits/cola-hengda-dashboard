@@ -145,7 +145,7 @@
         <span class="text-xs text-slate-400">/ <span id="kpi-total-ping">0</span> 坪</span>
       </div>
       <div class="text-[10px] text-slate-500 mt-0.5" id="kpi-progress-desc">
-        1F/RF 推進中
+        各工區推進中
       </div>
     </div>
 
@@ -825,6 +825,7 @@
                 <div class="flex items-center gap-1.5">
                   <span class="font-bold text-white tracking-wide">${floor.name}</span>
                   <span class="text-[10px] text-amber-400 font-mono font-bold">${floor.ping} 坪</span>
+                  ${floor.notes && floor.notes.includes('防墜') ? '<span class="text-[9px] bg-red-950/70 text-red-300 border border-red-800/80 px-1 py-0.2 rounded font-bold">⚠️ 防墜</span>' : ''}
                 </div>
                 <div class="text-[10px] text-slate-400 truncate mt-0.5">
                   ${status.verified ? '✅ 已點交驗收' : (status.clean ? '🧹 已吸掃裝袋' : (status.strike ? '🔨 已打石敲除' : '⏳ 待進場'))}
@@ -1248,38 +1249,47 @@
       const dateStr = siteState.date || new Date().toLocaleDateString('zh-TW');
 
       const buildings = getEffectiveBuildings();
-      let f1Clean = [];
-      let f1Verified = [];
-      let rfClean = [];
-      let rfVerified = [];
+      const bKeys = Object.keys(buildings);
+
+      // 動態分析全案出現的所有樓層/工區
+      const floorProgressMap = {}; // floorId -> { name, clean: [], verified: [], strike: [] }
       let fullVerifiedBuildings = [];
 
-      Object.keys(buildings).forEach(bId => {
+      bKeys.forEach(bId => {
         const b = buildings[bId];
         const floors = b.floors || {};
-        
-        let allVerified = true;
-        Object.keys(floors).forEach(fId => {
-          const st = (siteState.progress[bId] && siteState.progress[bId][fId]) || {};
-          if (fId === '1F') {
-            if (st.clean) f1Clean.push(bId);
-            if (st.verified) f1Verified.push(bId);
-          } else if (fId === 'RF') {
-            if (st.clean) rfClean.push(bId);
-            if (st.verified) rfVerified.push(bId);
+        const fKeys = Object.keys(floors);
+        let allVerified = fKeys.length > 0;
+
+        fKeys.forEach(fId => {
+          const fl = floors[fId];
+          if (!floorProgressMap[fId]) {
+            floorProgressMap[fId] = {
+              name: fl.name || fId,
+              clean: [],
+              verified: [],
+              strike: []
+            };
           }
+
+          const st = (siteState.progress[bId] && siteState.progress[bId][fId]) || {};
+          if (st.strike) floorProgressMap[fId].strike.push(bId);
+          if (st.clean) floorProgressMap[fId].clean.push(bId);
+          if (st.verified) floorProgressMap[fId].verified.push(bId);
           if (!st.verified) allVerified = false;
         });
 
-        if (allVerified && Object.keys(floors).length > 0) {
+        if (allVerified) {
           fullVerifiedBuildings.push(bId);
         }
       });
 
+      // 出工人員名單
       const presentWorkers = (siteState.workers || []).filter(w => w.present);
       const workerCount = presentWorkers.length;
       const workerNames = presentWorkers.map(w => w.name).join('、') || '現場調度中';
 
+      // 雜支代墊
       let totalExpense = 0;
       let expDetails = [];
       (siteState.expenses || []).forEach(e => {
@@ -1287,50 +1297,69 @@
         expDetails.push(`${e.item} $${e.amount} (${e.payer})`);
       });
 
-      const rDirector = `【${site.name} ${zoneLabel} 粗清現場日報】
+      // 動態生成各工區進度清單文字
+      let floorStatusLines = [];
+      Object.keys(floorProgressMap).forEach(fId => {
+        const fp = floorProgressMap[fId];
+        let line = `• ${fp.name}：`;
+        const cText = fp.clean.length > 0 ? `${fp.clean.join('、')}棟` : '無';
+        const vText = fp.verified.length > 0 ? `${fp.verified.join('、')}棟` : '待驗收';
+        line += `清潔完成: ${cText} | 點交鎖定: ${vText}`;
+        floorStatusLines.push(line);
+      });
+
+      if (floorStatusLines.length === 0) {
+        floorStatusLines.push('• 尚無工區資料');
+      }
+
+      // 動態契約與責任條款
+      let contractRulesText = '';
+      if (site.contract_rules && site.contract_rules.length > 0) {
+        contractRulesText = site.contract_rules.map(r => `• ${r}`).join('
+');
+      } else {
+        contractRulesText = '• 依合約標準粗清規範驗收點交，動線保持通暢。';
+      }
+
+      const rDirector = `【${site.name} ${zoneLabel} 現場施工與點交日報】
 日期：${dateStr}
-會同監造：${site.director || '主任'}
+會同監造：${site.director || '主任'} ${site.director_phone ? '(' + site.director_phone + ')' : ''}
 ─────────────────────
-一、今日分區施作進度 (${zoneLabel})：
-• 🏠 1F 一樓地面粗清打石：
-  - 清潔完工：${f1Clean.length > 0 ? f1Clean.join('、') : '推進中'}
-  - 點交鎖定：${f1Verified.length > 0 ? f1Verified.join('、') : '待會同簽認'}
+一、今日分區施作與點交進度 (${zoneLabel || '全工區'})：
+${floorStatusLines.join('
+')}
 
-• ☀️ RF 頂樓粗清裝袋：
-  - 清潔完工：${rfClean.length > 0 ? rfClean.join('、') : '推進中'}
-  - 點交鎖定：${rfVerified.length > 0 ? rfVerified.join('、') : '待會同簽認'}
+• 🎉 全棟所有工區點交驗收完畢：
+  ${fullVerifiedBuildings.length > 0 ? fullVerifiedBuildings.join('、') + ' 棟' : '逐步點交中'} (累計 ${fullVerifiedBuildings.length}/${bKeys.length} 棟全棟點交)
 
-• 🎉 全棟(1F+RF)雙重驗收鎖定：
-  - 已完成：${fullVerifiedBuildings.length > 0 ? fullVerifiedBuildings.join('、') : '逐步點交中'} (共 ${fullVerifiedBuildings.length}/${Object.keys(buildings).length} 棟)
+二、現場約定與施工重點履行：
+${contractRulesText}
 
-二、廢棄物集中位置（依約履行）：
-• 1F 一樓施工廢料：均搬運約 5 米集中堆置於各戶門口暫置區，車道通暢。
-• RF 頂樓施工廢料：均以業主提供之太空包原地裝袋堆置（不含吊運下樓）。
+三、現場備忘與工安通報：
+${siteState.memo ? siteState.memo : '現場水電正常，施工動線通暢無重大異常。'}
 
-三、現場備忘與請示：
-${siteState.memo ? siteState.memo : '現場水電正常，無重大異常。'}
-
-四、明日推進動線：
-• 預計續推後續棟別 1F 與 RF 清潔，屆時請 主任 撥冗會同驗收簽認。
+四、明日推進排程：
+• 預計續推後續棟別清潔打石，屆時敬請 主任 撥冗會同驗收簽認。
 可樂工程行 敬上`;
 
-      const rInternal = `【可樂工程行內部日報 · ${site.short_name || site.name} (${zoneLabel}組)】
+      const rInternal = `【可樂工程行內部營運日報 · ${site.short_name || site.name} (${zoneLabel || '全工區'})】
 日期：${dateStr}
 現場負責：亦軍 / 現場領班
 ─────────────────────
-一、今日實質出工 (共 ${workerCount} 工)：
+一、今日實質出工 (共 ${workerCount} 工次)：
 • 出勤人員：${workerNames}
 
-二、粗清工區推進概況：
-• 1F 清潔：${f1Clean.join('、') || '無'} (點交: ${f1Verified.join('、') || '無'})
-• RF 頂樓：${rfClean.join('、') || '無'} (點交: ${rfVerified.join('、') || '無'})
-• 全棟雙點交：${fullVerifiedBuildings.join('、') || '無'}
+二、各樓層工區推進實況：
+${floorStatusLines.join('
+')}
+• 全棟完工點交鎖定：${fullVerifiedBuildings.length > 0 ? fullVerifiedBuildings.join('、') + ' 棟' : '無'} (共 ${fullVerifiedBuildings.length}/${bKeys.length} 棟)
 
 三、現場代墊零碎雜支 (總計 $${totalExpense.toLocaleString()} 元)：
-${expDetails.length > 0 ? expDetails.map(d => '• ' + d).join('\n') : '• 無代墊支出'}
+${expDetails.length > 0 ? expDetails.map(d => '• ' + d).join('
+') : '• 無現場代墊款'}
 
-四、工具清點狀態：
-• 工具收工清點：${siteState.tool_check_mode ? '已完成收工清點無遺失' : '尚未收工清點'}
+四、工具清點與收工自檢：
+• 儀器工具收工：${siteState.tool_check_mode ? '✅ 已清點完畢無遺失' : '⏳ 尚未執行收工清點'}
 • 現場備忘：${siteState.memo || '無特殊異常'}`;
 
       document.getElementById('report-text-director').innerText = rDirector;
