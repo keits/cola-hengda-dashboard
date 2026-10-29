@@ -1,7 +1,7 @@
 {
-  "version": "2.0.0",
-  "updated_at": "2026-10-29 23:55",
-  "active_site_id": "qianyue_b",
+  "version": "2.2.0",
+  "updated_at": "2026-10-30 00:15",
+  "active_site_id": "qianyue",
   "payers": [
     "亦軍",
     "紫彤",
@@ -142,260 +142,289 @@
     }
   ],
   "sites": {
-    "qianyue_b": {
-      "id": "qianyue_b",
-      "name": "千悅·日安寬庭 B區粗清",
-      "short_name": "千悅日安寬庭B區",
+    "qianyue": {
+      "id": "qianyue",
+      "name": "千悅·日安寬庭粗清（大德街）",
+      "short_name": "千悅日安寬庭",
       "status": "active",
-      "status_label": "🟡 進行中（報價通過待進場）",
+      "status_label": "🟡 進行中（B區進場中 · A/C區待釋放）",
       "client_name": "千悅建設",
       "director": "主任",
       "director_phone": "現場會同",
       "location": "花蓮縣新城鄉大德街",
-      "total_ping": 484.45,
-      "total_sqm": 1601.5,
+      "total_ping": 1267.84,
+      "total_sqm": 4191.19,
       "quote_unit_price": 380,
-      "clean_quote_subtotal": 184091,
+      "clean_quote_subtotal": 481779,
       "waste_truck_count": 0,
       "waste_truck_price": 0,
       "waste_subtotal": 0,
       "contract_rules": [
         "一樓廢料搬運約 5 公尺暫置於各戶門口暫置區；不含後續裝載上車及場外清運。",
         "頂樓若有廢料由業主提供太空包，裝袋後原地集中堆置，不含跨樓層搬運及吊運。",
-        "二樓結構未完不含高空；工作面 10 棟一次全部釋放連續清掃。",
+        "二樓結構未完不含高空；工作面整批連續釋放清掃。",
         "各戶完工當日會同現場主任驗收簽認；簽認後二次污染復原另計點工。"
       ],
       "power_notes": "⚡ 現場配電盤約每 4 戶 1 處（建議自備 4 組 30m 輪座與多孔分接插座）",
-      "buildings": {
-        "B1": {
-          "name": "B1 棟",
-          "total_ping": 48.45,
-          "total_sqm": 160.15,
-          "floors": {
-            "1F": {
-              "name": "1F 一樓室內地面",
-              "ping": 28.45,
-              "sqm": 94.05,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+      "active_sub_zone": "B",
+      "sub_zones": {
+        "B": {
+          "id": "B",
+          "name": "B 區 (優先進場)",
+          "status": "active",
+          "total_ping": 484.45,
+          "total_sqm": 1601.5,
+          "desc": "10 棟 (B1~B10)，全釋放連續清",
+          "buildings": {
+            "B1": {
+              "name": "B1 棟",
+              "total_ping": 48.45,
+              "total_sqm": 160.15,
+              "floors": {
+                "1F": {
+                  "name": "1F 一樓室內地面",
+                  "ping": 28.45,
+                  "sqm": 94.05,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+                },
+                "RF": {
+                  "name": "RF 頂樓地面裝袋",
+                  "ping": 20.0,
+                  "sqm": 66.1,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
+                }
+              }
             },
-            "RF": {
-              "name": "RF 頂樓地面裝袋",
-              "ping": 20.0,
-              "sqm": 66.1,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
+            "B2": {
+              "name": "B2 棟",
+              "total_ping": 48.45,
+              "total_sqm": 160.15,
+              "floors": {
+                "1F": {
+                  "name": "1F 一樓室內地面",
+                  "ping": 28.45,
+                  "sqm": 94.05,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+                },
+                "RF": {
+                  "name": "RF 頂樓地面裝袋",
+                  "ping": 20.0,
+                  "sqm": 66.1,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
+                }
+              }
+            },
+            "B3": {
+              "name": "B3 棟",
+              "total_ping": 48.45,
+              "total_sqm": 160.15,
+              "floors": {
+                "1F": {
+                  "name": "1F 一樓室內地面",
+                  "ping": 28.45,
+                  "sqm": 94.05,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+                },
+                "RF": {
+                  "name": "RF 頂樓地面裝袋",
+                  "ping": 20.0,
+                  "sqm": 66.1,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
+                }
+              }
+            },
+            "B4": {
+              "name": "B4 棟",
+              "total_ping": 48.45,
+              "total_sqm": 160.15,
+              "floors": {
+                "1F": {
+                  "name": "1F 一樓室內地面",
+                  "ping": 28.45,
+                  "sqm": 94.05,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+                },
+                "RF": {
+                  "name": "RF 頂樓地面裝袋",
+                  "ping": 20.0,
+                  "sqm": 66.1,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
+                }
+              }
+            },
+            "B5": {
+              "name": "B5 棟",
+              "total_ping": 48.45,
+              "total_sqm": 160.15,
+              "floors": {
+                "1F": {
+                  "name": "1F 一樓室內地面",
+                  "ping": 28.45,
+                  "sqm": 94.05,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+                },
+                "RF": {
+                  "name": "RF 頂樓地面裝袋",
+                  "ping": 20.0,
+                  "sqm": 66.1,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
+                }
+              }
+            },
+            "B6": {
+              "name": "B6 棟",
+              "total_ping": 48.45,
+              "total_sqm": 160.15,
+              "floors": {
+                "1F": {
+                  "name": "1F 一樓室內地面",
+                  "ping": 28.45,
+                  "sqm": 94.05,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+                },
+                "RF": {
+                  "name": "RF 頂樓地面裝袋",
+                  "ping": 20.0,
+                  "sqm": 66.1,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
+                }
+              }
+            },
+            "B7": {
+              "name": "B7 棟",
+              "total_ping": 48.45,
+              "total_sqm": 160.15,
+              "floors": {
+                "1F": {
+                  "name": "1F 一樓室內地面",
+                  "ping": 28.45,
+                  "sqm": 94.05,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+                },
+                "RF": {
+                  "name": "RF 頂樓地面裝袋",
+                  "ping": 20.0,
+                  "sqm": 66.1,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
+                }
+              }
+            },
+            "B8": {
+              "name": "B8 棟",
+              "total_ping": 48.45,
+              "total_sqm": 160.15,
+              "floors": {
+                "1F": {
+                  "name": "1F 一樓室內地面",
+                  "ping": 28.45,
+                  "sqm": 94.05,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+                },
+                "RF": {
+                  "name": "RF 頂樓地面裝袋",
+                  "ping": 20.0,
+                  "sqm": 66.1,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
+                }
+              }
+            },
+            "B9": {
+              "name": "B9 棟",
+              "total_ping": 48.45,
+              "total_sqm": 160.15,
+              "floors": {
+                "1F": {
+                  "name": "1F 一樓室內地面",
+                  "ping": 28.45,
+                  "sqm": 94.05,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+                },
+                "RF": {
+                  "name": "RF 頂樓地面裝袋",
+                  "ping": 20.0,
+                  "sqm": 66.1,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
+                }
+              }
+            },
+            "B10": {
+              "name": "B10 棟",
+              "total_ping": 48.45,
+              "total_sqm": 160.15,
+              "floors": {
+                "1F": {
+                  "name": "1F 一樓室內地面",
+                  "ping": 28.45,
+                  "sqm": 94.05,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+                },
+                "RF": {
+                  "name": "RF 頂樓地面裝袋",
+                  "ping": 20.0,
+                  "sqm": 66.1,
+                  "strike_required": true,
+                  "clean_required": true,
+                  "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
+                }
+              }
             }
           }
         },
-        "B2": {
-          "name": "B2 棟",
-          "total_ping": 48.45,
-          "total_sqm": 160.15,
-          "floors": {
-            "1F": {
-              "name": "1F 一樓室內地面",
-              "ping": 28.45,
-              "sqm": 94.05,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
-            },
-            "RF": {
-              "name": "RF 頂樓地面裝袋",
-              "ping": 20.0,
-              "sqm": 66.1,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
-            }
-          }
+        "A": {
+          "id": "A",
+          "name": "A 區 (待釋放)",
+          "status": "pending",
+          "total_ping": 243.94,
+          "total_sqm": 806.4,
+          "desc": "預估約 4~5 間 (戶數待主任確認)",
+          "buildings": {}
         },
-        "B3": {
-          "name": "B3 棟",
-          "total_ping": 48.45,
-          "total_sqm": 160.15,
-          "floors": {
-            "1F": {
-              "name": "1F 一樓室內地面",
-              "ping": 28.45,
-              "sqm": 94.05,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
-            },
-            "RF": {
-              "name": "RF 頂樓地面裝袋",
-              "ping": 20.0,
-              "sqm": 66.1,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
-            }
-          }
-        },
-        "B4": {
-          "name": "B4 棟",
-          "total_ping": 48.45,
-          "total_sqm": 160.15,
-          "floors": {
-            "1F": {
-              "name": "1F 一樓室內地面",
-              "ping": 28.45,
-              "sqm": 94.05,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
-            },
-            "RF": {
-              "name": "RF 頂樓地面裝袋",
-              "ping": 20.0,
-              "sqm": 66.1,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
-            }
-          }
-        },
-        "B5": {
-          "name": "B5 棟",
-          "total_ping": 48.45,
-          "total_sqm": 160.15,
-          "floors": {
-            "1F": {
-              "name": "1F 一樓室內地面",
-              "ping": 28.45,
-              "sqm": 94.05,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
-            },
-            "RF": {
-              "name": "RF 頂樓地面裝袋",
-              "ping": 20.0,
-              "sqm": 66.1,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
-            }
-          }
-        },
-        "B6": {
-          "name": "B6 棟",
-          "total_ping": 48.45,
-          "total_sqm": 160.15,
-          "floors": {
-            "1F": {
-              "name": "1F 一樓室內地面",
-              "ping": 28.45,
-              "sqm": 94.05,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
-            },
-            "RF": {
-              "name": "RF 頂樓地面裝袋",
-              "ping": 20.0,
-              "sqm": 66.1,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
-            }
-          }
-        },
-        "B7": {
-          "name": "B7 棟",
-          "total_ping": 48.45,
-          "total_sqm": 160.15,
-          "floors": {
-            "1F": {
-              "name": "1F 一樓室內地面",
-              "ping": 28.45,
-              "sqm": 94.05,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
-            },
-            "RF": {
-              "name": "RF 頂樓地面裝袋",
-              "ping": 20.0,
-              "sqm": 66.1,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
-            }
-          }
-        },
-        "B8": {
-          "name": "B8 棟",
-          "total_ping": 48.45,
-          "total_sqm": 160.15,
-          "floors": {
-            "1F": {
-              "name": "1F 一樓室內地面",
-              "ping": 28.45,
-              "sqm": 94.05,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
-            },
-            "RF": {
-              "name": "RF 頂樓地面裝袋",
-              "ping": 20.0,
-              "sqm": 66.1,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
-            }
-          }
-        },
-        "B9": {
-          "name": "B9 棟",
-          "total_ping": 48.45,
-          "total_sqm": 160.15,
-          "floors": {
-            "1F": {
-              "name": "1F 一樓室內地面",
-              "ping": 28.45,
-              "sqm": 94.05,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
-            },
-            "RF": {
-              "name": "RF 頂樓地面裝袋",
-              "ping": 20.0,
-              "sqm": 66.1,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
-            }
-          }
-        },
-        "B10": {
-          "name": "B10 棟",
-          "total_ping": 48.45,
-          "total_sqm": 160.15,
-          "floors": {
-            "1F": {
-              "name": "1F 一樓室內地面",
-              "ping": 28.45,
-              "sqm": 94.05,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
-            },
-            "RF": {
-              "name": "RF 頂樓地面裝袋",
-              "ping": 20.0,
-              "sqm": 66.1,
-              "strike_required": true,
-              "clean_required": true,
-              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
-            }
-          }
+        "C": {
+          "id": "C",
+          "name": "C 區 (待釋放)",
+          "status": "pending",
+          "total_ping": 539.45,
+          "total_sqm": 1783.29,
+          "desc": "預估約 10~11 間 (戶數待主任確認)",
+          "buildings": {}
         }
       }
     },
@@ -802,9 +831,6 @@
       "total_sqm": 859.5,
       "quote_unit_price": 380,
       "clean_quote_subtotal": 98800,
-      "waste_truck_count": 0,
-      "waste_truck_price": 0,
-      "waste_subtotal": 0,
       "contract_rules": [
         "本案已全數點交結案，資料純供經驗調閱"
       ],
@@ -825,9 +851,6 @@
       "total_sqm": 1057.8,
       "quote_unit_price": 380,
       "clean_quote_subtotal": 121600,
-      "waste_truck_count": 0,
-      "waste_truck_price": 0,
-      "waste_subtotal": 0,
       "contract_rules": [
         "本案已全數點交結案，資料純供經驗調閱"
       ],

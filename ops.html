@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>可樂工程行 | 工地現場作戰系統 v2.1 (Cola Site Fleet)</title>
+  <title>可樂工程行 | 工地現場作戰系統 v2.2 (Cola Site Fleet)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -76,7 +76,7 @@
             </span>
           </div>
           <div class="text-[11px] text-slate-400 flex items-center gap-2 font-mono mt-0.5">
-            <span id="site-date-display">115/10/29 (週四)</span>
+            <span id="site-date-display">115/10/30</span>
             <span class="text-slate-600">|</span>
             <span class="text-amber-400 flex items-center gap-1" id="site-director-display">
               主任
@@ -185,11 +185,17 @@
 
     <!-- 1. 施工進度與點交 Tab -->
     <section id="tab-zones" class="space-y-3">
+      
+      <!-- 子分區切換膠囊 (Sub-Zones: B區 / A區 / C區) -->
+      <div id="sub-zones-nav-container" class="glass-card rounded-xl p-1.5 flex items-center gap-1.5 overflow-x-auto hidden">
+        <!-- JS 產生 A / B / C 膠囊按鈕 -->
+      </div>
+
       <!-- 總體進度推進條 -->
       <div class="glass-card rounded-2xl p-3 shadow-md">
         <div class="flex items-center justify-between text-xs mb-1.5 font-bold">
           <span class="text-slate-300 flex items-center gap-1">
-            <span>🏁</span> 全案施作推進條（含 1F 室內 + RF 頂樓裝袋）
+            <span>🏁</span> <span id="zone-progress-title">全案施作推進條</span>
           </span>
           <span class="text-cola-500 font-mono" id="progress-bar-text">0%</span>
         </div>
@@ -313,7 +319,7 @@
             <h2 class="text-base font-bold text-white flex items-center gap-1.5">
               <span>🧰</span> 粗清裝備出車／收工清點表
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">防工具落單、遺失於 10 棟工地</p>
+            <p class="text-xs text-slate-400 mt-0.5">防工具落單、遺失於工地</p>
           </div>
           <div class="flex items-center gap-1.5">
             <button onclick="toggleToolCheckMode()" id="tool-mode-btn" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold flex items-center gap-1">
@@ -355,7 +361,7 @@
         <!-- 現場狀況與問題備註 -->
         <div class="mb-4">
           <label class="text-xs font-bold text-slate-300 block mb-1">📝 現場待協調問題／今日備忘備註：</label>
-          <textarea id="site-memo-input" rows="3" oninput="saveSiteMemo()" placeholder="例：B3 戶廚房積水待抽、頂樓太空包待業主增補..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-cola-500 font-sans"></textarea>
+          <textarea id="site-memo-input" rows="3" oninput="saveSiteMemo()" placeholder="例：B3 戶廚房積水待抽、A 區釋放時間協調..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-cola-500 font-sans"></textarea>
         </div>
 
         <!-- 雙軌日報複製區塊 -->
@@ -466,20 +472,25 @@
 
   <!-- 內嵌資料與主要邏輯腳本 -->
   <script>
-    const EMBEDDED_CONFIG = {"version": "2.0.0", "updated_at": "2026-10-29 23:55", "active_site_id": "qianyue_b", "payers": ["亦軍", "紫彤", "紹齊", "領班代墊", "公帳零用金"], "common_tools": [{"name": "30M 輪座延長線", "default_qty": 4, "unit": "組", "tag": "電力核心(每4戶1處配電盤)"}, {"name": "多孔動力分接插座", "default_qty": 4, "unit": "個", "tag": "電力必備"}, {"name": "彈簧鋼平斬", "default_qty": 10, "unit": "支", "tag": "打石"}, {"name": "平鏟/平頭耙", "default_qty": 6, "unit": "支", "tag": "打石與扒料"}, {"name": "拔釘器", "default_qty": 4, "unit": "支", "tag": "拔釘拔鐵件"}, {"name": "鐵鎚", "default_qty": 4, "unit": "支", "tag": "敲擊"}, {"name": "無線/插電切割機", "default_qty": 2, "unit": "台", "tag": "鋼筋鐵件切斷"}, {"name": "切割片", "default_qty": 10, "unit": "片", "tag": "耗材"}, {"name": "竹掃把", "default_qty": 4, "unit": "支", "tag": "大面積清掃"}, {"name": "塑膠掃把+鐵畚箕", "default_qty": 6, "unit": "組", "tag": "細掃裝袋"}, {"name": "阿朱力(大提桶)", "default_qty": 4, "unit": "個", "tag": "提料裝袋"}, {"name": "獨輪推車", "default_qty": 2, "unit": "台", "tag": "推門口5米暫置"}, {"name": "平板四輪車", "default_qty": 2, "unit": "台", "tag": "室內推運"}, {"name": "米袋", "default_qty": 300, "unit": "只", "tag": "裝袋"}, {"name": "太空包(業主自備)", "default_qty": 10, "unit": "個", "tag": "頂樓或門口留置"}, {"name": "粗布工作手套", "default_qty": 30, "unit": "雙", "tag": "防護耗材"}], "safety_gear": [{"name": "安全帽", "required": true}, {"name": "反光背心", "required": true}, {"name": "防塵口罩 (N95/加厚)", "required": true}, {"name": "防護眼鏡", "required": true}, {"name": "防滑安全工作鞋", "required": true}, {"name": "醫藥急救箱", "required": true}, {"name": "高亮度工作燈", "required": false}, {"name": "飲用水/涼水保溫桶", "required": true}], "sites": {"qianyue_b": {"id": "qianyue_b", "name": "千悅·日安寬庭 B區粗清", "short_name": "千悅日安寬庭B區", "status": "active", "status_label": "🟡 進行中（報價通過待進場）", "client_name": "千悅建設", "director": "主任", "director_phone": "現場會同", "location": "花蓮縣新城鄉大德街", "total_ping": 484.45, "total_sqm": 1601.5, "quote_unit_price": 380, "clean_quote_subtotal": 184091, "waste_truck_count": 0, "waste_truck_price": 0, "waste_subtotal": 0, "contract_rules": ["一樓廢料搬運約 5 公尺暫置於各戶門口暫置區；不含後續裝載上車及場外清運。", "頂樓若有廢料由業主提供太空包，裝袋後原地集中堆置，不含跨樓層搬運及吊運。", "二樓結構未完不含高空；工作面 10 棟一次全部釋放連續清掃。", "各戶完工當日會同現場主任驗收簽認；簽認後二次污染復原另計點工。"], "power_notes": "⚡ 現場配電盤約每 4 戶 1 處（建議自備 4 組 30m 輪座與多孔分接插座）", "buildings": {"B1": {"name": "B1 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B2": {"name": "B2 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B3": {"name": "B3 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B4": {"name": "B4 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B5": {"name": "B5 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B6": {"name": "B6 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B7": {"name": "B7 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B8": {"name": "B8 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B9": {"name": "B9 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B10": {"name": "B10 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}}}, "hengda_tianyou": {"id": "hengda_tianyou", "name": "恆大新建住宅工程（天佑段）", "short_name": "恆大天佑段", "status": "active", "status_label": "🟡 進行中（報價階段）", "client_name": "泗維營造工程有限公司", "director": "陳靖宏", "director_phone": "0988-623319", "location": "花蓮縣新城鄉天佑段 650-1 地號", "total_ping": 738.51, "total_sqm": 2441.34, "quote_unit_price": 400, "clean_quote_subtotal": 295404, "waste_truck_count": 10, "waste_truck_price": 4500, "waste_subtotal": 45000, "contract_rules": ["含 10 趟廢棄物大車清運", "全區 11 棟 34 間房（地上 3 層 + 屋頂層）", "地下水電需先行協調抽水與防滑"], "power_notes": "⚡ 現場由泗維營造工務所統一供電", "buildings": [{"id": "A", "name": "A棟 (A型大戶)", "total_ping": 79.53, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 16.4, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 18.05}, {"id": "2F", "name": "2F (含陽台)", "ping": 18.05}, {"id": "1F", "name": "1F 室內", "ping": 20.5}, {"id": "yard", "name": "1F 後院空地", "ping": 6.53}]}, {"id": "B", "name": "B棟 (A型中戶)", "total_ping": 80.39, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 16.4, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 18.05}, {"id": "2F", "name": "2F (含陽台)", "ping": 18.05}, {"id": "1F", "name": "1F 室內", "ping": 20.5}, {"id": "yard", "name": "1F 後院空地", "ping": 7.39}]}, {"id": "C", "name": "C棟 (A型深院)", "total_ping": 81.24, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 16.4, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 18.05}, {"id": "2F", "name": "2F (含陽台)", "ping": 18.05}, {"id": "1F", "name": "1F 室內", "ping": 20.5}, {"id": "yard", "name": "1F 後院空地", "ping": 8.24}]}, {"id": "D", "name": "D棟 (B型標準)", "total_ping": 62.17, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.13, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.66}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.66}, {"id": "1F", "name": "1F 室內", "ping": 15.25}, {"id": "yard", "name": "1F 後院空地", "ping": 4.47}]}, {"id": "E", "name": "E棟 (B型標準)", "total_ping": 61.61, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.13, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.66}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.66}, {"id": "1F", "name": "1F 室內", "ping": 15.25}, {"id": "yard", "name": "1F 後院空地", "ping": 3.91}]}, {"id": "F", "name": "F棟 (B型標準)", "total_ping": 61.06, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.13, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.66}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.66}, {"id": "1F", "name": "1F 室內", "ping": 15.25}, {"id": "yard", "name": "1F 後院空地", "ping": 3.36}]}, {"id": "G", "name": "G棟 (C型連棟)", "total_ping": 61.27, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.92}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.92}, {"id": "1F", "name": "1F 室內", "ping": 15.35}, {"id": "yard", "name": "1F 後院空地", "ping": 2.71}]}, {"id": "H", "name": "H棟 (C型連棟)", "total_ping": 60.76, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.92}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.92}, {"id": "1F", "name": "1F 室內", "ping": 15.35}, {"id": "yard", "name": "1F 後院空地", "ping": 2.2}]}, {"id": "I", "name": "I棟 (C型連棟)", "total_ping": 60.13, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.92}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.92}, {"id": "1F", "name": "1F 室內", "ping": 15.35}, {"id": "yard", "name": "1F 後院空地", "ping": 1.57}]}, {"id": "J", "name": "J棟 (C型連棟)", "total_ping": 59.49, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.92}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.92}, {"id": "1F", "name": "1F 室內", "ping": 15.35}, {"id": "yard", "name": "1F 後院空地", "ping": 0.93}]}, {"id": "K", "name": "K棟 (D型邊間)", "total_ping": 65.1, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 15.34, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 16.87}, {"id": "2F", "name": "2F (含陽台)", "ping": 16.87}, {"id": "1F", "name": "1F 室內", "ping": 15.35}, {"id": "yard", "name": "1F 後院空地", "ping": 0.67}]}]}, "changfeng": {"id": "changfeng", "name": "長峯建設粗清工程", "short_name": "長峯清潔", "status": "archived", "status_label": "⚪ 已結案歸檔", "client_name": "長峯建設", "director": "現場工務", "director_phone": "-", "location": "花蓮市", "total_ping": 260.0, "total_sqm": 859.5, "quote_unit_price": 380, "clean_quote_subtotal": 98800, "waste_truck_count": 0, "waste_truck_price": 0, "waste_subtotal": 0, "contract_rules": ["本案已全數點交結案，資料純供經驗調閱"], "power_notes": "已結案", "buildings": {}}, "fuxing_5th": {"id": "fuxing_5th", "name": "恆大福興五街清潔工程", "short_name": "福興五街", "status": "archived", "status_label": "⚪ 已結案歸檔", "client_name": "恆大建設", "director": "現場監造", "director_phone": "-", "location": "吉安鄉福興五街", "total_ping": 320.0, "total_sqm": 1057.8, "quote_unit_price": 380, "clean_quote_subtotal": 121600, "waste_truck_count": 0, "waste_truck_price": 0, "waste_subtotal": 0, "contract_rules": ["本案已全數點交結案，資料純供經驗調閱"], "power_notes": "已結案", "buildings": {}}}};
+    const EMBEDDED_CONFIG = {"version": "2.2.0", "updated_at": "2026-10-30 00:15", "active_site_id": "qianyue", "payers": ["亦軍", "紫彤", "紹齊", "領班代墊", "公帳零用金"], "common_tools": [{"name": "30M 輪座延長線", "default_qty": 4, "unit": "組", "tag": "電力核心(每4戶1處配電盤)"}, {"name": "多孔動力分接插座", "default_qty": 4, "unit": "個", "tag": "電力必備"}, {"name": "彈簧鋼平斬", "default_qty": 10, "unit": "支", "tag": "打石"}, {"name": "平鏟/平頭耙", "default_qty": 6, "unit": "支", "tag": "打石與扒料"}, {"name": "拔釘器", "default_qty": 4, "unit": "支", "tag": "拔釘拔鐵件"}, {"name": "鐵鎚", "default_qty": 4, "unit": "支", "tag": "敲擊"}, {"name": "無線/插電切割機", "default_qty": 2, "unit": "台", "tag": "鋼筋鐵件切斷"}, {"name": "切割片", "default_qty": 10, "unit": "片", "tag": "耗材"}, {"name": "竹掃把", "default_qty": 4, "unit": "支", "tag": "大面積清掃"}, {"name": "塑膠掃把+鐵畚箕", "default_qty": 6, "unit": "組", "tag": "細掃裝袋"}, {"name": "阿朱力(大提桶)", "default_qty": 4, "unit": "個", "tag": "提料裝袋"}, {"name": "獨輪推車", "default_qty": 2, "unit": "台", "tag": "推門口5米暫置"}, {"name": "平板四輪車", "default_qty": 2, "unit": "台", "tag": "室內推運"}, {"name": "米袋", "default_qty": 300, "unit": "只", "tag": "裝袋"}, {"name": "太空包(業主自備)", "default_qty": 10, "unit": "個", "tag": "頂樓或門口留置"}, {"name": "粗布工作手套", "default_qty": 30, "unit": "雙", "tag": "防護耗材"}], "safety_gear": [{"name": "安全帽", "required": true}, {"name": "反光背心", "required": true}, {"name": "防塵口罩 (N95/加厚)", "required": true}, {"name": "防護眼鏡", "required": true}, {"name": "防滑安全工作鞋", "required": true}, {"name": "醫藥急救箱", "required": true}, {"name": "高亮度工作燈", "required": false}, {"name": "飲用水/涼水保溫桶", "required": true}], "sites": {"qianyue": {"id": "qianyue", "name": "千悅·日安寬庭粗清（大德街）", "short_name": "千悅日安寬庭", "status": "active", "status_label": "🟡 進行中（B區進場中 · A/C區待釋放）", "client_name": "千悅建設", "director": "主任", "director_phone": "現場會同", "location": "花蓮縣新城鄉大德街", "total_ping": 1267.84, "total_sqm": 4191.19, "quote_unit_price": 380, "clean_quote_subtotal": 481779, "waste_truck_count": 0, "waste_truck_price": 0, "waste_subtotal": 0, "contract_rules": ["一樓廢料搬運約 5 公尺暫置於各戶門口暫置區；不含後續裝載上車及場外清運。", "頂樓若有廢料由業主提供太空包，裝袋後原地集中堆置，不含跨樓層搬運及吊運。", "二樓結構未完不含高空；工作面整批連續釋放清掃。", "各戶完工當日會同現場主任驗收簽認；簽認後二次污染復原另計點工。"], "power_notes": "⚡ 現場配電盤約每 4 戶 1 處（建議自備 4 組 30m 輪座與多孔分接插座）", "active_sub_zone": "B", "sub_zones": {"B": {"id": "B", "name": "B 區 (優先進場)", "status": "active", "total_ping": 484.45, "total_sqm": 1601.5, "desc": "10 棟 (B1~B10)，全釋放連續清", "buildings": {"B1": {"name": "B1 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B2": {"name": "B2 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B3": {"name": "B3 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B4": {"name": "B4 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B5": {"name": "B5 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B6": {"name": "B6 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B7": {"name": "B7 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B8": {"name": "B8 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B9": {"name": "B9 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}, "B10": {"name": "B10 棟", "total_ping": 48.45, "total_sqm": 160.15, "floors": {"1F": {"name": "1F 一樓室內地面", "ping": 28.45, "sqm": 94.05, "strike_required": true, "clean_required": true, "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"}, "RF": {"name": "RF 頂樓地面裝袋", "ping": 20.0, "sqm": 66.1, "strike_required": true, "clean_required": true, "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"}}}}}, "A": {"id": "A", "name": "A 區 (待釋放)", "status": "pending", "total_ping": 243.94, "total_sqm": 806.4, "desc": "預估約 4~5 間 (戶數待主任確認)", "buildings": {}}, "C": {"id": "C", "name": "C 區 (待釋放)", "status": "pending", "total_ping": 539.45, "total_sqm": 1783.29, "desc": "預估約 10~11 間 (戶數待主任確認)", "buildings": {}}}}, "hengda_tianyou": {"id": "hengda_tianyou", "name": "恆大新建住宅工程（天佑段）", "short_name": "恆大天佑段", "status": "active", "status_label": "🟡 進行中（報價階段）", "client_name": "泗維營造工程有限公司", "director": "陳靖宏", "director_phone": "0988-623319", "location": "花蓮縣新城鄉天佑段 650-1 地號", "total_ping": 738.51, "total_sqm": 2441.34, "quote_unit_price": 400, "clean_quote_subtotal": 295404, "waste_truck_count": 10, "waste_truck_price": 4500, "waste_subtotal": 45000, "contract_rules": ["含 10 趟廢棄物大車清運", "全區 11 棟 34 間房（地上 3 層 + 屋頂層）", "地下水電需先行協調抽水與防滑"], "power_notes": "⚡ 現場由泗維營造工務所統一供電", "buildings": [{"id": "A", "name": "A棟 (A型大戶)", "total_ping": 79.53, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 16.4, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 18.05}, {"id": "2F", "name": "2F (含陽台)", "ping": 18.05}, {"id": "1F", "name": "1F 室內", "ping": 20.5}, {"id": "yard", "name": "1F 後院空地", "ping": 6.53}]}, {"id": "B", "name": "B棟 (A型中戶)", "total_ping": 80.39, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 16.4, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 18.05}, {"id": "2F", "name": "2F (含陽台)", "ping": 18.05}, {"id": "1F", "name": "1F 室內", "ping": 20.5}, {"id": "yard", "name": "1F 後院空地", "ping": 7.39}]}, {"id": "C", "name": "C棟 (A型深院)", "total_ping": 81.24, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 16.4, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 18.05}, {"id": "2F", "name": "2F (含陽台)", "ping": 18.05}, {"id": "1F", "name": "1F 室內", "ping": 20.5}, {"id": "yard", "name": "1F 後院空地", "ping": 8.24}]}, {"id": "D", "name": "D棟 (B型標準)", "total_ping": 62.17, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.13, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.66}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.66}, {"id": "1F", "name": "1F 室內", "ping": 15.25}, {"id": "yard", "name": "1F 後院空地", "ping": 4.47}]}, {"id": "E", "name": "E棟 (B型標準)", "total_ping": 61.61, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.13, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.66}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.66}, {"id": "1F", "name": "1F 室內", "ping": 15.25}, {"id": "yard", "name": "1F 後院空地", "ping": 3.91}]}, {"id": "F", "name": "F棟 (B型標準)", "total_ping": 61.06, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.13, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.66}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.66}, {"id": "1F", "name": "1F 室內", "ping": 15.25}, {"id": "yard", "name": "1F 後院空地", "ping": 3.36}]}, {"id": "G", "name": "G棟 (C型連棟)", "total_ping": 61.27, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.92}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.92}, {"id": "1F", "name": "1F 室內", "ping": 15.35}, {"id": "yard", "name": "1F 後院空地", "ping": 2.71}]}, {"id": "H", "name": "H棟 (C型連棟)", "total_ping": 60.76, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.92}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.92}, {"id": "1F", "name": "1F 室內", "ping": 15.35}, {"id": "yard", "name": "1F 後院空地", "ping": 2.2}]}, {"id": "I", "name": "I棟 (C型連棟)", "total_ping": 60.13, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.92}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.92}, {"id": "1F", "name": "1F 室內", "ping": 15.35}, {"id": "yard", "name": "1F 後院空地", "ping": 1.57}]}, {"id": "J", "name": "J棟 (C型連棟)", "total_ping": 59.49, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 14.92}, {"id": "2F", "name": "2F (含陽台)", "ping": 14.92}, {"id": "1F", "name": "1F 室內", "ping": 15.35}, {"id": "yard", "name": "1F 後院空地", "ping": 0.93}]}, {"id": "K", "name": "K棟 (D型邊間)", "total_ping": 65.1, "zones": [{"id": "RF", "name": "RF屋頂平頂", "ping": 15.34, "roof_alert": true}, {"id": "3F", "name": "3F (含陽台)", "ping": 16.87}, {"id": "2F", "name": "2F (含陽台)", "ping": 16.87}, {"id": "1F", "name": "1F 室內", "ping": 15.35}, {"id": "yard", "name": "1F 後院空地", "ping": 0.67}]}]}, "changfeng": {"id": "changfeng", "name": "長峯建設粗清工程", "short_name": "長峯清潔", "status": "archived", "status_label": "⚪ 已結案歸檔", "client_name": "長峯建設", "director": "現場工務", "director_phone": "-", "location": "花蓮市", "total_ping": 260.0, "total_sqm": 859.5, "quote_unit_price": 380, "clean_quote_subtotal": 98800, "contract_rules": ["本案已全數點交結案，資料純供經驗調閱"], "power_notes": "已結案", "buildings": {}}, "fuxing_5th": {"id": "fuxing_5th", "name": "恆大福興五街清潔工程", "short_name": "福興五街", "status": "archived", "status_label": "⚪ 已結案歸檔", "client_name": "恆大建設", "director": "現場監造", "director_phone": "-", "location": "吉安鄉福興五街", "total_ping": 320.0, "total_sqm": 1057.8, "quote_unit_price": 380, "clean_quote_subtotal": 121600, "contract_rules": ["本案已全數點交結案，資料純供經驗調閱"], "power_notes": "已結案", "buildings": {}}}};
     let CONFIG_DATA = EMBEDDED_CONFIG;
 
-    let CURRENT_SITE_ID = localStorage.getItem('cola_active_site_id') || CONFIG_DATA.active_site_id || 'qianyue_b';
+    let CURRENT_SITE_ID = localStorage.getItem('cola_active_site_id') || CONFIG_DATA.active_site_id || 'qianyue';
     if (!CONFIG_DATA.sites[CURRENT_SITE_ID]) {
       CURRENT_SITE_ID = Object.keys(CONFIG_DATA.sites)[0];
     }
 
+    // 當前選取的子分區 (A / B / C)，預設為 B
+    let CURRENT_SUB_ZONE = localStorage.getItem('cola_active_sub_zone_' + CURRENT_SITE_ID) || 'B';
+
     let siteState = {
       site_id: CURRENT_SITE_ID,
+      active_sub_zone: CURRENT_SUB_ZONE,
       date: new Date().toLocaleDateString('zh-TW'),
       memo: '',
       tool_check_mode: false,
       progress: {},
+      custom_buildings: {}, // 動態現場加的棟別 (如 A1, A2...)
       workers: [],
       expenses: [],
       tools_checklist: {},
@@ -502,6 +513,25 @@
       return 'cola_site_ops_state_' + siteId;
     }
 
+    function getEffectiveBuildings() {
+      const site = CONFIG_DATA.sites[CURRENT_SITE_ID];
+      if (!site) return {};
+
+      let baseBuildings = {};
+      if (site.sub_zones && site.sub_zones[CURRENT_SUB_ZONE]) {
+        baseBuildings = Object.assign({}, site.sub_zones[CURRENT_SUB_ZONE].buildings || {});
+      } else {
+        baseBuildings = Object.assign({}, site.buildings || {});
+      }
+
+      // 合併現場動態加棟 (custom_buildings)
+      if (siteState.custom_buildings && siteState.custom_buildings[CURRENT_SUB_ZONE]) {
+        Object.assign(baseBuildings, siteState.custom_buildings[CURRENT_SUB_ZONE]);
+      }
+
+      return baseBuildings;
+    }
+
     function initOrLoadCurrentSite() {
       const currentSite = CONFIG_DATA.sites[CURRENT_SITE_ID];
       const saved = localStorage.getItem(getStorageKey(CURRENT_SITE_ID));
@@ -516,17 +546,8 @@
         buildDefaultState(CURRENT_SITE_ID);
       }
 
-      // 補齊可能新增的 1F/RF 樓層狀態
-      if (currentSite && currentSite.buildings) {
-        Object.keys(currentSite.buildings).forEach(bId => {
-          if (!siteState.progress[bId]) siteState.progress[bId] = {};
-          const floors = currentSite.buildings[bId].floors || {};
-          Object.keys(floors).forEach(fId => {
-            if (!siteState.progress[bId][fId]) {
-              siteState.progress[bId][fId] = { strike: false, clean: false, verified: false };
-            }
-          });
-        });
+      if (!siteState.custom_buildings) {
+        siteState.custom_buildings = {};
       }
 
       if (!siteState.workers || siteState.workers.length === 0) {
@@ -538,29 +559,17 @@
       const site = CONFIG_DATA.sites[siteId];
       siteState = {
         site_id: siteId,
+        active_sub_zone: CURRENT_SUB_ZONE,
         date: new Date().toLocaleDateString('zh-TW'),
         memo: '',
         tool_check_mode: false,
         progress: {},
+        custom_buildings: {},
         workers: [],
         expenses: [],
         tools_checklist: {},
         safety_gear_checklist: {}
       };
-
-      if (site && site.buildings) {
-        Object.keys(site.buildings).forEach(bId => {
-          siteState.progress[bId] = {};
-          const floors = site.buildings[bId].floors || {};
-          Object.keys(floors).forEach(fId => {
-            siteState.progress[bId][fId] = {
-              strike: false,
-              clean: false,
-              verified: false
-            };
-          });
-        });
-      }
     }
 
     async function fetchLiveDispatchInitial() {
@@ -578,6 +587,7 @@
     function saveStateToLocalStorage() {
       localStorage.setItem(getStorageKey(CURRENT_SITE_ID), JSON.stringify(siteState));
       localStorage.setItem('cola_active_site_id', CURRENT_SITE_ID);
+      localStorage.setItem('cola_active_sub_zone_' + CURRENT_SITE_ID, CURRENT_SUB_ZONE);
       updateRadarStats();
     }
 
@@ -588,6 +598,7 @@
       setTimeout(() => { t.style.display = 'none'; }, 2000);
     }
 
+    // ==================== 案場切換 (Fleet Switcher) ====================
     function openSiteSwitcherModal() {
       const modal = document.getElementById('site-switcher-modal');
       const activeList = document.getElementById('modal-active-sites-list');
@@ -641,12 +652,25 @@
     function selectSite(siteId) {
       saveStateToLocalStorage();
       CURRENT_SITE_ID = siteId;
+      CURRENT_SUB_ZONE = 'B';
       initOrLoadCurrentSite();
       closeSiteSwitcherModal();
       renderAll();
       showToast(`已切換至：${CONFIG_DATA.sites[siteId].name}`);
     }
 
+    // ==================== 子分區切換 (A / B / C) ====================
+    function selectSubZone(zoneId) {
+      CURRENT_SUB_ZONE = zoneId;
+      siteState.active_sub_zone = zoneId;
+      saveStateToLocalStorage();
+      renderZonesTab();
+      updateRadarStats();
+      generateAllReports();
+      showToast(`已切換至：${zoneId} 區`);
+    }
+
+    // ==================== 全頁面渲染 ====================
     function renderAll() {
       updateHeaderInfo();
       renderZonesTab();
@@ -673,22 +697,79 @@
       document.getElementById('site-memo-input').value = siteState.memo || '';
     }
 
+    // ==================== 1. 進度點交 Tab (支援 A/B/C 子分區切換與動態加棟) ====================
     function renderZonesTab() {
       const site = CONFIG_DATA.sites[CURRENT_SITE_ID];
+      const navContainer = document.getElementById('sub-zones-nav-container');
       const container = document.getElementById('building-cards-container');
       container.innerHTML = '';
 
-      if (!site || !site.buildings || Object.keys(site.buildings).length === 0) {
-        container.innerHTML = '<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-xs">本案場無棟別資料或已歸檔結案。</div>';
+      // 若有 sub_zones (如千悅 A/B/C)，渲染切換膠囊
+      if (site && site.sub_zones) {
+        navContainer.classList.remove('hidden');
+        navContainer.innerHTML = '';
+        Object.keys(site.sub_zones).forEach(zId => {
+          const sz = site.sub_zones[zId];
+          const isSelected = zId === CURRENT_SUB_ZONE;
+          const btn = document.createElement('button');
+          btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${isSelected ? 'bg-cola-600 text-white shadow-md' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`;
+          btn.innerHTML = `
+            <span>${sz.name}</span>
+            <span class="text-[10px] ${isSelected ? 'text-amber-200' : 'text-slate-400'} font-mono">${sz.total_ping}坪</span>
+          `;
+          btn.onclick = () => selectSubZone(zId);
+          navContainer.appendChild(btn);
+        });
+      } else {
+        navContainer.classList.add('hidden');
+      }
+
+      const buildings = getEffectiveBuildings();
+      const bKeys = Object.keys(buildings);
+
+      // 若該分區尚無棟別 (如 A 區或 C 區尚未提供間數)
+      if (bKeys.length === 0) {
+        const sz = site && site.sub_zones && site.sub_zones[CURRENT_SUB_ZONE];
+        container.innerHTML = `
+          <div class="glass-card rounded-2xl p-6 text-center space-y-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-2xl mx-auto">
+              ⏳
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-white">${sz ? sz.name : '工區'} 尚待主任確認戶數間數</h3>
+              <p class="text-xs text-slate-400 mt-1">本區預估面積 ${sz ? sz.total_ping : 0} 坪 · 目前尚未正式釋放施工面</p>
+            </div>
+            <div class="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
+              <button onclick="promptAddCustomBuilding()" class="px-4 py-2 rounded-xl bg-cola-600 hover:bg-cola-500 text-white text-xs font-bold shadow flex items-center justify-center gap-1.5">
+                <span>➕</span> 現場新增棟別 (${CURRENT_SUB_ZONE}1)
+              </button>
+              <button onclick="quickGenerateBatchBuildings()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 flex items-center justify-center gap-1.5">
+                <span>⚡</span> 一鍵生成預估棟別 (${CURRENT_SUB_ZONE === 'A' ? 'A1~A5' : 'C1~C11'})
+              </button>
+            </div>
+          </div>
+        `;
         return;
       }
 
-      const bKeys = Object.keys(site.buildings);
+      // 頂部加一個「現場加棟」快捷欄
+      if (site && site.sub_zones) {
+        const addBar = document.createElement('div');
+        addBar.className = 'flex items-center justify-between px-1 text-xs text-slate-400';
+        addBar.innerHTML = `
+          <span>目前共 ${bKeys.length} 棟施作面</span>
+          <button onclick="promptAddCustomBuilding()" class="text-cola-400 hover:text-cola-300 font-bold flex items-center gap-1">
+            <span>➕</span> 加開一棟 (${CURRENT_SUB_ZONE}${bKeys.length + 1})
+          </button>
+        `;
+        container.appendChild(addBar);
+      }
+
       const gridWrapper = document.createElement('div');
       gridWrapper.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3';
 
       bKeys.forEach(bId => {
-        const b = site.buildings[bId];
+        const b = buildings[bId];
         const floors = b.floors || {};
         const fKeys = Object.keys(floors);
 
@@ -750,6 +831,75 @@
       });
 
       container.appendChild(gridWrapper);
+    }
+
+    function promptAddCustomBuilding() {
+      const bName = prompt(`請輸入新增棟別代號 (例如 ${CURRENT_SUB_ZONE}1)：`, `${CURRENT_SUB_ZONE}1`);
+      if (!bName || !bName.trim()) return;
+      const cleanName = bName.trim().toUpperCase();
+
+      const pingStr = prompt(`請輸入 ${cleanName} 總坪數 (按取消預設 48.5 坪)：`, '48.5');
+      const totalPing = Number(pingStr) || 48.5;
+      const f1Ping = Math.round(totalPing * 0.58 * 100) / 100;
+      const rfPing = Math.round((totalPing - f1Ping) * 100) / 100;
+
+      if (!siteState.custom_buildings) siteState.custom_buildings = {};
+      if (!siteState.custom_buildings[CURRENT_SUB_ZONE]) siteState.custom_buildings[CURRENT_SUB_ZONE] = {};
+
+      siteState.custom_buildings[CURRENT_SUB_ZONE][cleanName] = {
+        name: `${cleanName} 棟`,
+        total_ping: totalPing,
+        total_sqm: Math.round(totalPing * 3.3058 * 100) / 100,
+        floors: {
+          "1F": {
+            name: "1F 一樓室內地面",
+            ping: f1Ping,
+            notes: "客餐廳車庫地坪打石吸掃"
+          },
+          "RF": {
+            name: "RF 頂樓地面裝袋",
+            ping: rfPing,
+            notes: "太空包原地裝袋留置"
+          }
+        }
+      };
+
+      saveStateToLocalStorage();
+      renderZonesTab();
+      updateRadarStats();
+      generateAllReports();
+      showToast(`已成功新增 ${cleanName} 棟 (${totalPing} 坪)！`);
+    }
+
+    function quickGenerateBatchBuildings() {
+      const zone = CURRENT_SUB_ZONE;
+      const count = zone === 'A' ? 5 : 11;
+      const defaultTotal = zone === 'A' ? 243.94 : 539.45;
+      const perPing = Math.round((defaultTotal / count) * 100) / 100;
+      const f1Ping = Math.round(perPing * 0.58 * 100) / 100;
+      const rfPing = Math.round((perPing - f1Ping) * 100) / 100;
+
+      if (!siteState.custom_buildings) siteState.custom_buildings = {};
+      if (!siteState.custom_buildings[zone]) siteState.custom_buildings[zone] = {};
+
+      for (let i = 1; i <= count; i++) {
+        const bId = `${zone}${i}`;
+        siteState.custom_buildings[zone][bId] = {
+          name: `${bId} 棟`,
+          total_ping: perPing,
+          total_sqm: Math.round(perPing * 3.3058 * 100) / 100,
+          floors: {
+            "1F": { name: "1F 一樓室內地面", ping: f1Ping, notes: "打石吸掃推門口" },
+            "RF": { name: "RF 頂樓地面裝袋", ping: rfPing, notes: "太空包裝袋原地留置" }
+          }
+        };
+      }
+
+      saveStateToLocalStorage();
+      renderZonesTab();
+      updateRadarStats();
+      generateAllReports();
+      showToast(`已自動生成 ${zone} 區共 ${count} 棟！`);
     }
 
     function toggleSingleFloorAction(bId, fId, action) {
@@ -1016,16 +1166,19 @@
 
     function generateAllReports() {
       const site = CONFIG_DATA.sites[CURRENT_SITE_ID] || {};
+      const sz = site.sub_zones && site.sub_zones[CURRENT_SUB_ZONE];
+      const zoneLabel = sz ? sz.name : '';
       const dateStr = siteState.date || new Date().toLocaleDateString('zh-TW');
 
+      const buildings = getEffectiveBuildings();
       let f1Clean = [];
       let f1Verified = [];
       let rfClean = [];
       let rfVerified = [];
       let fullVerifiedBuildings = [];
 
-      Object.keys(site.buildings || {}).forEach(bId => {
-        const b = site.buildings[bId];
+      Object.keys(buildings).forEach(bId => {
+        const b = buildings[bId];
         const floors = b.floors || {};
         
         let allVerified = true;
@@ -1057,11 +1210,11 @@
         expDetails.push(`${e.item} $${e.amount} (${e.payer})`);
       });
 
-      const rDirector = `【${site.name} 粗清現場日報】
+      const rDirector = `【${site.name} ${zoneLabel} 粗清現場日報】
 日期：${dateStr}
 會同監造：${site.director || '主任'}
 ─────────────────────
-一、今日分區施作進度：
+一、今日分區施作進度 (${zoneLabel})：
 • 🏠 1F 一樓地面粗清打石：
   - 清潔完工：${f1Clean.length > 0 ? f1Clean.join('、') : '推進中'}
   - 點交鎖定：${f1Verified.length > 0 ? f1Verified.join('、') : '待會同簽認'}
@@ -1071,7 +1224,7 @@
   - 點交鎖定：${rfVerified.length > 0 ? rfVerified.join('、') : '待會同簽認'}
 
 • 🎉 全棟(1F+RF)雙重驗收鎖定：
-  - 已完成：${fullVerifiedBuildings.length > 0 ? fullVerifiedBuildings.join('、') : '逐步點交中'} (共 ${fullVerifiedBuildings.length}/${Object.keys(site.buildings || {}).length} 棟)
+  - 已完成：${fullVerifiedBuildings.length > 0 ? fullVerifiedBuildings.join('、') : '逐步點交中'} (共 ${fullVerifiedBuildings.length}/${Object.keys(buildings).length} 棟)
 
 二、廢棄物集中位置（依約履行）：
 • 1F 一樓施工廢料：均搬運約 5 米集中堆置於各戶門口暫置區，車道通暢。
@@ -1084,7 +1237,7 @@ ${siteState.memo ? siteState.memo : '現場水電正常，無重大異常。'}
 • 預計續推後續棟別 1F 與 RF 清潔，屆時請 主任 撥冗會同驗收簽認。
 可樂工程行 敬上`;
 
-      const rInternal = `【可樂工程行內部日報 · ${site.short_name || site.name}】
+      const rInternal = `【可樂工程行內部日報 · ${site.short_name || site.name} (${zoneLabel}組)】
 日期：${dateStr}
 現場負責：亦軍 / 現場領班
 ─────────────────────
@@ -1118,16 +1271,20 @@ ${expDetails.length > 0 ? expDetails.map(d => '• ' + d).join('\n') : '• 無�
 
     function updateRadarStats() {
       const site = CONFIG_DATA.sites[CURRENT_SITE_ID] || {};
-      const totalPing = site.total_ping || 0;
-      document.getElementById('kpi-total-ping').innerText = totalPing;
+      const sz = site.sub_zones && site.sub_zones[CURRENT_SUB_ZONE];
+      const targetPing = sz ? sz.total_ping : (site.total_ping || 0);
 
+      document.getElementById('kpi-total-ping').innerText = targetPing;
+      document.getElementById('zone-progress-title').innerText = `${sz ? sz.name : '全案'} 施作推進條`;
+
+      const buildings = getEffectiveBuildings();
       let donePing = 0;
       let totalFloorsCount = 0;
       let verifiedFloorsCount = 0;
-      const bKeys = Object.keys(site.buildings || {});
+      const bKeys = Object.keys(buildings);
 
       bKeys.forEach(bId => {
-        const b = site.buildings[bId];
+        const b = buildings[bId];
         Object.keys(b.floors || {}).forEach(fId => {
           totalFloorsCount++;
           const floor = b.floors[fId];
@@ -1144,7 +1301,7 @@ ${expDetails.length > 0 ? expDetails.map(d => '• ' + d).join('\n') : '• 無�
       donePing = Math.round(donePing * 100) / 100;
       document.getElementById('kpi-done-ping').innerText = donePing;
 
-      const percent = totalPing > 0 ? Math.round((donePing / totalPing) * 100) : 0;
+      const percent = targetPing > 0 ? Math.round((donePing / targetPing) * 100) : 0;
       document.getElementById('kpi-percent').innerText = percent + '%';
       document.getElementById('progress-bar-fill').style.width = percent + '%';
       document.getElementById('progress-bar-text').innerText = `${verifiedFloorsCount} / ${totalFloorsCount} 個工區點交 (${percent}%)`;
@@ -1199,7 +1356,7 @@ ${expDetails.length > 0 ? expDetails.map(d => '• ' + d).join('\n') : '• 無�
 
     function saveAndExportJSON() {
       saveStateToLocalStorage();
-      const filename = `site_ops_log_${CURRENT_SITE_ID}_${new Date().toISOString().slice(0, 10)}.json`;
+      const filename = `site_ops_log_${CURRENT_SITE_ID}_${CURRENT_SUB_ZONE}_${new Date().toISOString().slice(0, 10)}.json`;
       const blob = new Blob([JSON.stringify(siteState, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
