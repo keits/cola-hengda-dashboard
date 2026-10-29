@@ -173,12 +173,20 @@
           "total_sqm": 160.15,
           "floors": {
             "1F": {
-              "name": "1F 地面標準粗清與打石",
-              "ping": 48.45,
-              "sqm": 160.15,
+              "name": "1F 一樓室內地面",
+              "ping": 28.45,
+              "sqm": 94.05,
               "strike_required": true,
               "clean_required": true,
-              "notes": "客餐廳、車庫、廚衛地坪打石與吸掃裝袋"
+              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+            },
+            "RF": {
+              "name": "RF 頂樓地面裝袋",
+              "ping": 20.0,
+              "sqm": 66.1,
+              "strike_required": true,
+              "clean_required": true,
+              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
             }
           }
         },
@@ -188,12 +196,20 @@
           "total_sqm": 160.15,
           "floors": {
             "1F": {
-              "name": "1F 地面標準粗清與打石",
-              "ping": 48.45,
-              "sqm": 160.15,
+              "name": "1F 一樓室內地面",
+              "ping": 28.45,
+              "sqm": 94.05,
               "strike_required": true,
               "clean_required": true,
-              "notes": "客餐廳、車庫、廚衛地坪打石與吸掃裝袋"
+              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+            },
+            "RF": {
+              "name": "RF 頂樓地面裝袋",
+              "ping": 20.0,
+              "sqm": 66.1,
+              "strike_required": true,
+              "clean_required": true,
+              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
             }
           }
         },
@@ -203,12 +219,20 @@
           "total_sqm": 160.15,
           "floors": {
             "1F": {
-              "name": "1F 地面標準粗清與打石",
-              "ping": 48.45,
-              "sqm": 160.15,
+              "name": "1F 一樓室內地面",
+              "ping": 28.45,
+              "sqm": 94.05,
               "strike_required": true,
               "clean_required": true,
-              "notes": "客餐廳、車庫、廚衛地坪打石與吸掃裝袋"
+              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+            },
+            "RF": {
+              "name": "RF 頂樓地面裝袋",
+              "ping": 20.0,
+              "sqm": 66.1,
+              "strike_required": true,
+              "clean_required": true,
+              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
             }
           }
         },
@@ -218,12 +242,20 @@
           "total_sqm": 160.15,
           "floors": {
             "1F": {
-              "name": "1F 地面標準粗清與打石",
-              "ping": 48.45,
-              "sqm": 160.15,
+              "name": "1F 一樓室內地面",
+              "ping": 28.45,
+              "sqm": 94.05,
               "strike_required": true,
               "clean_required": true,
-              "notes": "客餐廳、車庫、廚衛地坪打石與吸掃裝袋"
+              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+            },
+            "RF": {
+              "name": "RF 頂樓地面裝袋",
+              "ping": 20.0,
+              "sqm": 66.1,
+              "strike_required": true,
+              "clean_required": true,
+              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
             }
           }
         },
@@ -233,12 +265,20 @@
           "total_sqm": 160.15,
           "floors": {
             "1F": {
-              "name": "1F 地面標準粗清與打石",
-              "ping": 48.45,
-              "sqm": 160.15,
+              "name": "1F 一樓室內地面",
+              "ping": 28.45,
+              "sqm": 94.05,
               "strike_required": true,
               "clean_required": true,
-              "notes": "客餐廳、車庫、廚衛地坪打石與吸掃裝袋"
+              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+            },
+            "RF": {
+              "name": "RF 頂樓地面裝袋",
+              "ping": 20.0,
+              "sqm": 66.1,
+              "strike_required": true,
+              "clean_required": true,
+              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
             }
           }
         },
@@ -248,12 +288,20 @@
           "total_sqm": 160.15,
           "floors": {
             "1F": {
-              "name": "1F 地面標準粗清與打石",
-              "ping": 48.45,
-              "sqm": 160.15,
+              "name": "1F 一樓室內地面",
+              "ping": 28.45,
+              "sqm": 94.05,
               "strike_required": true,
               "clean_required": true,
-              "notes": "客餐廳、車庫、廚衛地坪打石與吸掃裝袋"
+              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+            },
+            "RF": {
+              "name": "RF 頂樓地面裝袋",
+              "ping": 20.0,
+              "sqm": 66.1,
+              "strike_required": true,
+              "clean_required": true,
+              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
             }
           }
         },
@@ -263,12 +311,20 @@
           "total_sqm": 160.15,
           "floors": {
             "1F": {
-              "name": "1F 地面標準粗清與打石",
-              "ping": 48.45,
-              "sqm": 160.15,
+              "name": "1F 一樓室內地面",
+              "ping": 28.45,
+              "sqm": 94.05,
               "strike_required": true,
               "clean_required": true,
-              "notes": "客餐廳、車庫、廚衛地坪打石與吸掃裝袋"
+              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+            },
+            "RF": {
+              "name": "RF 頂樓地面裝袋",
+              "ping": 20.0,
+              "sqm": 66.1,
+              "strike_required": true,
+              "clean_required": true,
+              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
             }
           }
         },
@@ -278,12 +334,20 @@
           "total_sqm": 160.15,
           "floors": {
             "1F": {
-              "name": "1F 地面標準粗清與打石",
-              "ping": 48.45,
-              "sqm": 160.15,
+              "name": "1F 一樓室內地面",
+              "ping": 28.45,
+              "sqm": 94.05,
               "strike_required": true,
               "clean_required": true,
-              "notes": "客餐廳、車庫、廚衛地坪打石與吸掃裝袋"
+              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+            },
+            "RF": {
+              "name": "RF 頂樓地面裝袋",
+              "ping": 20.0,
+              "sqm": 66.1,
+              "strike_required": true,
+              "clean_required": true,
+              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
             }
           }
         },
@@ -293,12 +357,20 @@
           "total_sqm": 160.15,
           "floors": {
             "1F": {
-              "name": "1F 地面標準粗清與打石",
-              "ping": 48.45,
-              "sqm": 160.15,
+              "name": "1F 一樓室內地面",
+              "ping": 28.45,
+              "sqm": 94.05,
               "strike_required": true,
               "clean_required": true,
-              "notes": "客餐廳、車庫、廚衛地坪打石與吸掃裝袋"
+              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+            },
+            "RF": {
+              "name": "RF 頂樓地面裝袋",
+              "ping": 20.0,
+              "sqm": 66.1,
+              "strike_required": true,
+              "clean_required": true,
+              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
             }
           }
         },
@@ -308,12 +380,20 @@
           "total_sqm": 160.15,
           "floors": {
             "1F": {
-              "name": "1F 地面標準粗清與打石",
-              "ping": 48.45,
-              "sqm": 160.15,
+              "name": "1F 一樓室內地面",
+              "ping": 28.45,
+              "sqm": 94.05,
               "strike_required": true,
               "clean_required": true,
-              "notes": "客餐廳、車庫、廚衛地坪打石與吸掃裝袋"
+              "notes": "客餐廳車庫地坪打石、吸掃裝袋推至各戶門口5米暫置"
+            },
+            "RF": {
+              "name": "RF 頂樓地面裝袋",
+              "ping": 20.0,
+              "sqm": 66.1,
+              "strike_required": true,
+              "clean_required": true,
+              "notes": "頂樓地面粗清，業主供太空包原地裝袋堆置(不含吊運)"
             }
           }
         }
