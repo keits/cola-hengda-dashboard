@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>可樂工程行 | 工地現場作戰系統 v2.2 (Cola Site Fleet)</title>
+  <title>可樂工程行 | 工地現場作戰系統 v2.3 (Cola Site Fleet)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -480,7 +480,6 @@
       CURRENT_SITE_ID = Object.keys(CONFIG_DATA.sites)[0];
     }
 
-    // 當前選取的子分區 (A / B / C)，預設為 B
     let CURRENT_SUB_ZONE = localStorage.getItem('cola_active_sub_zone_' + CURRENT_SITE_ID) || 'B';
 
     let siteState = {
@@ -490,7 +489,7 @@
       memo: '',
       tool_check_mode: false,
       progress: {},
-      custom_buildings: {}, // 動態現場加的棟別 (如 A1, A2...)
+      custom_buildings: {},
       workers: [],
       expenses: [],
       tools_checklist: {},
@@ -524,7 +523,6 @@
         baseBuildings = Object.assign({}, site.buildings || {});
       }
 
-      // 合併現場動態加棟 (custom_buildings)
       if (siteState.custom_buildings && siteState.custom_buildings[CURRENT_SUB_ZONE]) {
         Object.assign(baseBuildings, siteState.custom_buildings[CURRENT_SUB_ZONE]);
       }
@@ -598,7 +596,6 @@
       setTimeout(() => { t.style.display = 'none'; }, 2000);
     }
 
-    // ==================== 案場切換 (Fleet Switcher) ====================
     function openSiteSwitcherModal() {
       const modal = document.getElementById('site-switcher-modal');
       const activeList = document.getElementById('modal-active-sites-list');
@@ -659,7 +656,6 @@
       showToast(`已切換至：${CONFIG_DATA.sites[siteId].name}`);
     }
 
-    // ==================== 子分區切換 (A / B / C) ====================
     function selectSubZone(zoneId) {
       CURRENT_SUB_ZONE = zoneId;
       siteState.active_sub_zone = zoneId;
@@ -670,7 +666,6 @@
       showToast(`已切換至：${zoneId} 區`);
     }
 
-    // ==================== 全頁面渲染 ====================
     function renderAll() {
       updateHeaderInfo();
       renderZonesTab();
@@ -697,14 +692,12 @@
       document.getElementById('site-memo-input').value = siteState.memo || '';
     }
 
-    // ==================== 1. 進度點交 Tab (支援 A/B/C 子分區切換與動態加棟) ====================
     function renderZonesTab() {
       const site = CONFIG_DATA.sites[CURRENT_SITE_ID];
       const navContainer = document.getElementById('sub-zones-nav-container');
       const container = document.getElementById('building-cards-container');
       container.innerHTML = '';
 
-      // 若有 sub_zones (如千悅 A/B/C)，渲染切換膠囊
       if (site && site.sub_zones) {
         navContainer.classList.remove('hidden');
         navContainer.innerHTML = '';
@@ -727,7 +720,6 @@
       const buildings = getEffectiveBuildings();
       const bKeys = Object.keys(buildings);
 
-      // 若該分區尚無棟別 (如 A 區或 C 區尚未提供間數)
       if (bKeys.length === 0) {
         const sz = site && site.sub_zones && site.sub_zones[CURRENT_SUB_ZONE];
         container.innerHTML = `
@@ -752,15 +744,18 @@
         return;
       }
 
-      // 頂部加一個「現場加棟」快捷欄
       if (site && site.sub_zones) {
+        const hasCustomInThisZone = siteState.custom_buildings && siteState.custom_buildings[CURRENT_SUB_ZONE] && Object.keys(siteState.custom_buildings[CURRENT_SUB_ZONE]).length > 0;
         const addBar = document.createElement('div');
         addBar.className = 'flex items-center justify-between px-1 text-xs text-slate-400';
         addBar.innerHTML = `
           <span>目前共 ${bKeys.length} 棟施作面</span>
-          <button onclick="promptAddCustomBuilding()" class="text-cola-400 hover:text-cola-300 font-bold flex items-center gap-1">
-            <span>➕</span> 加開一棟 (${CURRENT_SUB_ZONE}${bKeys.length + 1})
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="promptAddCustomBuilding()" class="text-cola-400 hover:text-cola-300 font-bold flex items-center gap-1">
+              <span>➕</span> 加開一棟 (${CURRENT_SUB_ZONE}${bKeys.length + 1})
+            </button>
+            ${hasCustomInThisZone ? `<button onclick="resetCustomBuildingsInZone('${CURRENT_SUB_ZONE}')" class="text-[11px] text-red-400 hover:text-red-300 border border-red-500/40 px-2 py-0.5 rounded bg-red-950/40 flex items-center gap-0.5">🗑️ 清空重設</button>` : ''}
+          </div>
         `;
         container.appendChild(addBar);
       }
@@ -772,6 +767,7 @@
         const b = buildings[bId];
         const floors = b.floors || {};
         const fKeys = Object.keys(floors);
+        const isCustom = siteState.custom_buildings && siteState.custom_buildings[CURRENT_SUB_ZONE] && !!siteState.custom_buildings[CURRENT_SUB_ZONE][bId];
 
         let isAllFloorsVerified = fKeys.length > 0 && fKeys.every(fId => {
           return siteState.progress[bId] && siteState.progress[bId][fId] && siteState.progress[bId][fId].verified;
@@ -818,9 +814,12 @@
               <span class="text-sm font-black text-white">${b.name}</span>
               <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-1.5 py-0.2 rounded border border-amber-500/20">全棟 ${b.total_ping} 坪</span>
             </div>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${isAllFloorsVerified ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-slate-800 text-slate-400'}">
-              ${isAllFloorsVerified ? '🎉 全棟點交鎖定' : '施作中'}
-            </span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${isAllFloorsVerified ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-slate-800 text-slate-400'}">
+                ${isAllFloorsVerified ? '🎉 全棟點交鎖定' : '施作中'}
+              </span>
+              ${isCustom ? `<button onclick="deleteCustomBuilding('${CURRENT_SUB_ZONE}', '${bId}')" title="刪除此棟" class="text-[10px] font-bold text-red-400 hover:text-red-300 px-1.5 py-0.5 bg-red-950/50 border border-red-500/30 rounded flex items-center gap-0.5">🗑️ 刪除</button>` : ''}
+            </div>
           </div>
 
           <div class="space-y-1">
@@ -900,6 +899,38 @@
       updateRadarStats();
       generateAllReports();
       showToast(`已自動生成 ${zone} 區共 ${count} 棟！`);
+    }
+
+    function deleteCustomBuilding(zone, bId) {
+      if (!confirm(`確定要刪除 ${bId} 棟嗎？此動作將移除該棟所有打石與清潔紀錄。`)) return;
+      if (siteState.custom_buildings && siteState.custom_buildings[zone]) {
+        delete siteState.custom_buildings[zone][bId];
+      }
+      if (siteState.progress && siteState.progress[bId]) {
+        delete siteState.progress[bId];
+      }
+      saveStateToLocalStorage();
+      renderZonesTab();
+      updateRadarStats();
+      generateAllReports();
+      showToast(`已成功刪除 ${bId} 棟！`);
+    }
+
+    function resetCustomBuildingsInZone(zone) {
+      if (!confirm(`確定要清空 ${zone} 區的所有自訂棟別嗎？`)) return;
+      if (siteState.custom_buildings && siteState.custom_buildings[zone]) {
+        Object.keys(siteState.custom_buildings[zone]).forEach(bId => {
+          if (siteState.progress && siteState.progress[bId]) {
+            delete siteState.progress[bId];
+          }
+        });
+        delete siteState.custom_buildings[zone];
+      }
+      saveStateToLocalStorage();
+      renderZonesTab();
+      updateRadarStats();
+      generateAllReports();
+      showToast(`已清空 ${zone} 區的自訂棟別！`);
     }
 
     function toggleSingleFloorAction(bId, fId, action) {
