@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>可樂工程行 | 工地現場作戰系統 v1.0 (Cola Site Ops)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cola: {
+              50: '#fff7ed',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+              800: '#9a3412',
+              900: '#7c2d12',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+    * { -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Noto Sans TC', "微軟正黑體", sans-serif;
+      background-color: #0b1120;
+      color: #f1f5f9;
+      user-select: none;
+    }
+    .glass-nav {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .touch-btn {
+      min-height: 44px;
+      touch-action: manipulation;
+    }
+    /* 自訂滾動條 */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #0b1120; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="min-h-screen pb-24 flex flex-col">
+
+  <!-- 頂部即時狀態看板 (固定置頂) -->
+  <header class="sticky top-0 z-40 glass-nav px-3 py-2.5 shadow-lg">
+    <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
+      <!-- 案場選擇與名稱 -->
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl bg-cola-500/20 border border-cola-500/40 flex items-center justify-center text-lg">
+          🏗️
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-sm font-black text-white tracking-wide" id="site-title-display">恆大新建住宅工程</h1>
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">現場作戰版</span>
+          </div>
+          <div class="text-[11px] text-slate-400 flex items-center gap-2 font-mono">
+            <span id="site-date-display">115/10/29 (週四)</span>
+            <span class="text-slate-600">|</span>
+            <span class="text-amber-400" id="site-director-display">陳靖宏主任 0988-623319</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 快捷存檔與同步狀態 -->
+      <div class="flex items-center gap-1.5">
+        <button onclick="saveAndExportJSON()" title="儲存並匯出日誌" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 flex items-center gap-1">
+          <span>💾</span>
+          <span class="hidden sm:inline">備份</span>
+        </button>
+        <button onclick="syncLiveDispatch()" title="重整派工名單" class="px-2.5 py-1.5 rounded-lg bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 text-xs font-bold border border-blue-500/40 flex items-center gap-1">
+          <span id="sync-icon">🔄</span>
+          <span class="hidden sm:inline">重整派工</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 頂部即時坪效與進度雷達條 -->
+    <div class="max-w-4xl mx-auto mt-2 pt-2 border-t border-slate-800/80 grid grid-cols-4 gap-1.5 text-center text-xs">
+      <div class="bg-slate-900/80 rounded-lg p-1.5 border border-slate-800">
+        <div class="text-[10px] text-slate-400">已完工坪數</div>
+        <div class="font-black text-white font-mono text-sm" id="stat-clean-ping">0.0 <span class="text-[9px] text-slate-400">/ 738.5</span></div>
+      </div>
+      <div class="bg-slate-900/80 rounded-lg p-1.5 border border-slate-800">
+        <div class="text-[10px] text-slate-400">完成進度率</div>
+        <div class="font-black text-emerald-400 font-mono text-sm" id="stat-clean-percent">0.0%</div>
+      </div>
+      <div class="bg-slate-900/80 rounded-lg p-1.5 border border-slate-800">
+        <div class="text-[10px] text-slate-400">累計出工</div>
+        <div class="font-black text-amber-400 font-mono text-sm" id="stat-total-workers">0.0 <span class="text-[9px] text-slate-400">工</span></div>
+      </div>
+      <div class="bg-slate-900/80 rounded-lg p-1.5 border border-slate-800">
+        <div class="text-[10px] text-slate-400">目前實質坪效</div>
+        <div class="font-black text-blue-400 font-mono text-sm" id="stat-productivity">0.0 <span class="text-[9px] text-slate-400">坪/工</span></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要內容區 (5 大分頁) -->
+  <main class="max-w-4xl mx-auto w-full px-3 pt-3 flex-1">
+
+    <!-- ==================== TAB 1: 棟別與樓層進度矩陣 ==================== -->
+    <section id="tab-zones" class="space-y-3">
+      <!-- 橫向切換棟別 (A ~ K) -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 no-scrollbar">
+        <button onclick="selectBuilding('ALL')" id="bldg-btn-ALL" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-cola-500 text-white shadow-lg shadow-cola-500/25">全區 11 棟</button>
+        <button onclick="selectBuilding('A')" id="bldg-btn-A" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-slate-800 text-slate-300">A 棟 (80坪)</button>
+        <button onclick="selectBuilding('B')" id="bldg-btn-B" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-slate-800 text-slate-300">B 棟 (80坪)</button>
+        <button onclick="selectBuilding('C')" id="bldg-btn-C" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-slate-800 text-slate-300">C 棟 (81坪)</button>
+        <button onclick="selectBuilding('D')" id="bldg-btn-D" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-slate-800 text-slate-300">D 棟 (62坪)</button>
+        <button onclick="selectBuilding('E')" id="bldg-btn-E" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-slate-800 text-slate-300">E 棟 (62坪)</button>
+        <button onclick="selectBuilding('F')" id="bldg-btn-F" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-slate-800 text-slate-300">F 棟 (61坪)</button>
+        <button onclick="selectBuilding('G')" id="bldg-btn-G" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-slate-800 text-slate-300">G 棟 (61坪)</button>
+        <button onclick="selectBuilding('H')" id="bldg-btn-H" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-slate-800 text-slate-300">H 棟 (61坪)</button>
+        <button onclick="selectBuilding('I')" id="bldg-btn-I" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-slate-800 text-slate-300">I 棟 (60坪)</button>
+        <button onclick="selectBuilding('J')" id="bldg-btn-J" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-slate-800 text-slate-300">J 棟 (59坪)</button>
+        <button onclick="selectBuilding('K')" id="bldg-btn-K" class="bldg-btn px-3 py-2 rounded-xl text-xs font-black transition whitespace-nowrap bg-slate-800 text-slate-300">K 棟 (65坪)</button>
+      </div>
+
+      <!-- 工序操作說明膠囊 -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-2 text-[11px] text-slate-400 flex items-center justify-between">
+        <span>💡 點選棟別樓層工序按鈕：</span>
+        <div class="flex items-center gap-2">
+          <span class="flex items-center gap-1 text-amber-400 font-bold"><span class="w-2 h-2 rounded-full bg-amber-400"></span>🔨打石</span>
+          <span class="flex items-center gap-1 text-blue-400 font-bold"><span class="w-2 h-2 rounded-full bg-blue-400"></span>🧹清潔</span>
+          <span class="flex items-center gap-1 text-emerald-400 font-bold"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>✅點交鎖定</span>
+        </div>
+      </div>
+
+      <!-- 棟別樓層卡片容器 (動態渲染) -->
+      <div id="building-cards-container" class="space-y-3">
+        <!-- JS 動態生成 -->
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: 當日出工與派工核對 ==================== -->
+    <section id="tab-dispatch" class="space-y-3 hidden">
+      <div class="glass-card rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-700/60 pb-2.5">
+          <div>
+            <h2 class="text-sm font-black text-white flex items-center gap-1.5">
+              <span>👷</span> 當日粗工出勤登記（直接連動派工單）
+            </h2>
+            <p class="text-[11px] text-slate-400 mt-0.5">點擊工人牌卡切換出工狀態，自動即時計算總工資與實質坪效</p>
+          </div>
+          <button onclick="promptAddCustomWorker()" class="px-3 py-1.5 rounded-xl bg-cola-500 hover:bg-cola-600 text-white text-xs font-bold shadow-md shadow-cola-500/20 flex items-center gap-1">
+            <span>➕</span> 臨時加人
+          </button>
+        </div>
+
+        <!-- 當日工資統計膠囊 -->
+        <div class="bg-slate-900/90 rounded-xl p-3 grid grid-cols-3 gap-2 text-center text-xs border border-slate-800">
+          <div>
+            <div class="text-[10px] text-slate-400">今日實到工數</div>
+            <div class="text-base font-black text-amber-400 font-mono" id="today-headcount">0.0 工</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-400">今日工資總額</div>
+            <div class="text-base font-black text-white font-mono" id="today-wage-total">$0</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-400">今日每工產能</div>
+            <div class="text-base font-black text-blue-400 font-mono" id="today-productivity">-- 坪/工</div>
+          </div>
+        </div>
+
+        <!-- 工人清單 (卡片列表) -->
+        <div id="workers-list-container" class="space-y-2">
+          <!-- JS 渲染今日派工人員 -->
+        </div>
+
+        <!-- 報班待命池快捷加人區 -->
+        <div class="pt-2 border-t border-slate-800">
+          <div class="text-xs font-bold text-slate-400 mb-1.5 flex items-center justify-between">
+            <span>⚡ 今日報班待命池人員（點擊直接指派到恆大）：</span>
+            <span class="text-[10px] text-slate-500" id="standby-count-hint">0 人在池</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5" id="standby-pool-chips">
+            <!-- 待命池 Chips -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: 涼水便當與工具代墊 ==================== -->
+    <section id="tab-expenses" class="space-y-3 hidden">
+      <div class="glass-card rounded-2xl p-4 space-y-4">
+        <div class="border-b border-slate-700/60 pb-2.5 flex items-center justify-between">
+          <div>
+            <h2 class="text-sm font-black text-white flex items-center gap-1.5">
+              <span>💸</span> 現場支出與代墊快記
+            </h2>
+            <p class="text-[11px] text-slate-400 mt-0.5">涼水、便當、買工具耗材 3 秒記帳，自動統計誰代墊</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 block">今日累計支出</span>
+            <span class="text-sm font-black text-rose-400 font-mono" id="today-expense-total">$0</span>
+          </div>
+        </div>
+
+        <!-- 快捷品項按鈕 (大觸控) -->
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1.5">1. 選擇支出項目類別</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button onclick="setExpenseItem('便當午餐', 100)" class="exp-cat-btn py-2.5 px-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-cola-500 text-xs font-bold text-center">🍱 便當</button>
+            <button onclick="setExpenseItem('涼水飲料', 35)" class="exp-cat-btn py-2.5 px-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-cola-500 text-xs font-bold text-center">🥤 涼水</button>
+            <button onclick="setExpenseItem('冰塊飲水', 50)" class="exp-cat-btn py-2.5 px-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-cola-500 text-xs font-bold text-center">🧊 冰塊水</button>
+            <button onclick="setExpenseItem('麻布米袋', 200)" class="exp-cat-btn py-2.5 px-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-cola-500 text-xs font-bold text-center">🛍️ 米袋包材</button>
+            <button onclick="setExpenseItem('平斬/平鏟五金', 500)" class="exp-cat-btn py-2.5 px-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-cola-500 text-xs font-bold text-center">🛠️ 平斬工具</button>
+            <button onclick="setExpenseItem('手套/切片耗材', 100)" class="exp-cat-btn py-2.5 px-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-cola-500 text-xs font-bold text-center">🧤 手套切片</button>
+            <button onclick="setExpenseItem('清運小貨車趟', 4500)" class="exp-cat-btn py-2.5 px-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-cola-500 text-xs font-bold text-center">🚛 清運車資</button>
+            <button onclick="setExpenseItem('其他工地雜支', 0)" class="exp-cat-btn py-2.5 px-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-cola-500 text-xs font-bold text-center">📝 其他雜支</button>
+          </div>
+        </div>
+
+        <!-- 填寫品項名稱與金額 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">品項名稱與數量說明</label>
+            <input type="text" id="input-exp-name" placeholder="例如：便當 10 個、平斬 5 支" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-bold">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">金額 (NT$)</label>
+            <input type="number" id="input-exp-amount" placeholder="金額" step="10" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-base text-rose-400 font-mono font-black">
+          </div>
+        </div>
+
+        <!-- 誰先代墊 -->
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1.5">2. 誰先代墊款項？（對帳防漏）</label>
+          <div class="grid grid-cols-5 gap-1.5" id="payer-buttons-container">
+            <!-- JS 動態生成代墊人 -->
+          </div>
+        </div>
+
+        <!-- 拍照與提交按鈕 -->
+        <div class="flex items-center gap-2 pt-1">
+          <label class="flex-1 touch-btn rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-300 cursor-pointer">
+            <span>📷 拍發票/收據單</span>
+            <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleReceiptPhoto(this)">
+          </label>
+          <button onclick="addExpenseRecord()" class="flex-1 touch-btn rounded-xl bg-cola-500 hover:bg-cola-600 text-white font-black text-sm shadow-lg shadow-cola-500/25">
+            ＋ 新增此筆支出
+          </button>
+        </div>
+
+        <!-- 今日支出明細與代墊小計清單 -->
+        <div class="pt-3 border-t border-slate-800 space-y-2">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-400">
+            <span>今日已記支出清單</span>
+            <span id="payer-summary-text" class="text-amber-400 text-[11px]"></span>
+          </div>
+          <div id="expense-records-list" class="space-y-1.5">
+            <!-- JS 渲染支出清單 -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: 粗清工具點檢與收工防丟 ==================== -->
+    <section id="tab-tools" class="space-y-3 hidden">
+      <div class="glass-card rounded-2xl p-4 space-y-4">
+        <div class="border-b border-slate-700/60 pb-2.5 flex items-center justify-between">
+          <div>
+            <h2 class="text-sm font-black text-white flex items-center gap-1.5">
+              <span>🧰</span> 粗清準備工具 ＆ 收工防丟清點表
+            </h2>
+            <p class="text-[11px] text-slate-400 mt-0.5">出車前確認帶齊，收工時清點收回（防止工具遺漏在 11 棟某處）</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="toggleToolMode()" id="tool-mode-btn" class="px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold">
+              切換：收工清點模式
+            </button>
+          </div>
+        </div>
+
+        <!-- 安全裝備檢查提示 -->
+        <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-300 space-y-1">
+          <div class="font-bold flex items-center gap-1">
+            <span>⚠️</span> 現場工安鐵律（派工單標註 7:50到）：
+          </div>
+          <div class="text-[11px] text-amber-200/90 leading-relaxed">
+            全員務必配戴安全帽、反光背心、防滑鞋！RF 屋頂作業時必須落實安全繩與外架吊桶防墜！
+          </div>
+        </div>
+
+        <!-- 工具清單表格 -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-900/90 text-slate-400 uppercase font-bold border-b border-slate-800">
+              <tr>
+                <th class="py-2.5 px-3">工具名稱</th>
+                <th class="py-2.5 px-2 text-center">出車數量</th>
+                <th class="py-2.5 px-2 text-center text-amber-400">收工清點</th>
+                <th class="py-2.5 px-2 text-center">狀態</th>
+              </tr>
+            </thead>
+            <tbody id="tools-table-body" class="divide-y divide-slate-800/60 font-medium">
+              <!-- JS 動態生成 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: 現場問題與 LINE 日報產生器 ==================== -->
+    <section id="tab-report" class="space-y-3 hidden">
+      <div class="glass-card rounded-2xl p-4 space-y-4">
+        <div class="border-b border-slate-700/60 pb-2.5">
+          <h2 class="text-sm font-black text-white flex items-center gap-1.5">
+            <span>📋</span> 工地現場問題備註 ＆ LINE 一鍵日報
+          </h2>
+          <p class="text-[11px] text-slate-400 mt-0.5">文字語音快速備註，一鍵產生「給營造主任」與「內部帳務」日報</p>
+        </div>
+
+        <!-- 現場問題快記區 -->
+        <div class="space-y-2 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+          <label class="block text-xs font-bold text-slate-300">1. 記錄現場問題或追加工項</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5" id="issue-presets-container">
+            <!-- 快選問題標籤 -->
+          </div>
+          <div class="pt-1 flex gap-2">
+            <input type="text" id="input-custom-issue" placeholder="自訂問題備註說明（例如：C棟2F水電打鑿未退場）" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            <button onclick="addIssueRecord()" class="px-4 py-2 rounded-xl bg-cola-500 hover:bg-cola-600 text-white font-bold text-xs whitespace-nowrap">
+              ＋ 記下問題
+            </button>
+          </div>
+        </div>
+
+        <!-- 今日已記錄問題列表 -->
+        <div id="issues-list-display" class="space-y-1.5">
+          <!-- JS 渲染已記問題 -->
+        </div>
+
+        <!-- LINE 日報預覽與一鍵複製區 -->
+        <div class="space-y-3 pt-2 border-t border-slate-800">
+          <label class="block text-xs font-bold text-slate-300">2. 一鍵複製日報文字（傳送 LINE）</label>
+          
+          <!-- 報告 1: 給營造廠陳靖宏主任 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400">【對外】給泗維營造陳靖宏主任（點交與施工協調）</span>
+              <button onclick="copyReportText('client')" class="px-3 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 text-xs font-bold flex items-center gap-1">
+                <span>📋</span> 複製給陳主任
+              </button>
+            </div>
+            <textarea id="report-text-client" readonly rows="5" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs font-mono text-slate-300 resize-none"></textarea>
+          </div>
+
+          <!-- 報告 2: 可樂工程行內部戰情日報 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400">【對內】可樂工程行內部日報（含工班、工資、代墊、坪效）</span>
+              <button onclick="copyReportText('internal')" class="px-3 py-1 rounded-lg bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1">
+                <span>📋</span> 複製內部群組
+              </button>
+            </div>
+            <textarea id="report-text-internal" readonly rows="6" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs font-mono text-slate-300 resize-none"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 底部固定大按鈕導覽列 (5 大分頁) -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-2 py-1.5 shadow-2xl">
+    <div class="max-w-md mx-auto grid grid-cols-5 gap-1">
+      <button onclick="switchTab('zones')" id="nav-btn-zones" class="nav-tab-btn py-1.5 flex flex-col items-center justify-center rounded-xl text-cola-500 font-bold transition">
+        <span class="text-lg">🏢</span>
+        <span class="text-[10px] mt-0.5">棟別進度</span>
+      </button>
+      <button onclick="switchTab('dispatch')" id="nav-btn-dispatch" class="nav-tab-btn py-1.5 flex flex-col items-center justify-center rounded-xl text-slate-400 font-medium transition">
+        <span class="text-lg">👷</span>
+        <span class="text-[10px] mt-0.5">出工坪效</span>
+      </button>
+      <button onclick="switchTab('expenses')" id="nav-btn-expenses" class="nav-tab-btn py-1.5 flex flex-col items-center justify-center rounded-xl text-slate-400 font-medium transition">
+        <span class="text-lg">💸</span>
+        <span class="text-[10px] mt-0.5">涼水工具</span>
+      </button>
+      <button onclick="switchTab('tools')" id="nav-btn-tools" class="nav-tab-btn py-1.5 flex flex-col items-center justify-center rounded-xl text-slate-400 font-medium transition">
+        <span class="text-lg">🧰</span>
+        <span class="text-[10px] mt-0.5">工具點檢</span>
+      </button>
+      <button onclick="switchTab('report')" id="nav-btn-report" class="nav-tab-btn py-1.5 flex flex-col items-center justify-center rounded-xl text-slate-400 font-medium transition">
+        <span class="text-lg">📋</span>
+        <span class="text-[10px] mt-0.5">LINE日報</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 提示 Toast -->
+  <div id="toast" class="fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-slate-900 border border-cola-500 text-white text-xs font-bold px-4 py-2 rounded-full shadow-2xl hidden items-center gap-2"></div>
+
+  <!-- 核心資料邏輯 JavaScript -->
+  <script>
+    // 預設全域狀態
+    let appConfig = null;
+    let currentSite = null;
+    let siteState = {
+      zones: {}, // key: "A_RF" -> { shishi: bool, qingjie: bool, dianjiao: bool, dianjiaoDate: str, bags: int }
+      workers: [], // [{ name, s7, status, rate, workCount }]
+      expenses: [], // [{ id, name, amount, payer, time }]
+      toolsCheck: {}, // { toolName: { out: int, back: int, checked: bool } }
+      issues: [], // [{ id, text, time }]
+      selectedPayer: '亦軍'
+    };
+
+    let activeBldgFilter = 'ALL';
+    let isToolCheckMode = false;
+
+    // 初始化載入
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadAppConfig();
+      loadStateFromLocalStorage();
+      renderAll();
+    });
+
+    async function loadAppConfig() {
+      try {
+        const res = await fetch('sites_config.json');
+        appConfig = await res.json();
+        currentSite = appConfig.sites[appConfig.active_site_id];
+      } catch (e) {
+        console.warn('無法連線 sites_config.json，載入內建快取', e);
+        // Fallback 預設
+        currentSite = {
+          name: "恆大新建住宅工程（天佑段）",
+          director: "陳靖宏",
+          director_phone: "0988-623319",
+          total_ping: 738.51,
+          buildings: []
+        };
+      }
+    }
+
+    function loadStateFromLocalStorage() {
+      const saved = localStorage.getItem('cola_site_ops_state_1151027_hengda');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          siteState = Object.assign(siteState, parsed);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      // 若尚未有工人，嘗試載入 live_dispatch.json
+      if (!siteState.workers || siteState.workers.length === 0) {
+        fetchLiveDispatchInitial();
+      }
+    }
+
+    async function fetchLiveDispatchInitial() {
+      try {
+        const res = await fetch('live_dispatch.json');
+        const data = await res.json();
+        if (data.assigned_workers && data.assigned_workers.length > 0) {
+          siteState.workers = data.assigned_workers;
+          renderWorkersTab();
+        }
+      } catch (e) {}
+    }
+
+    function saveStateToLocalStorage() {
+      localStorage.setItem('cola_site_ops_state_1151027_hengda', JSON.stringify(siteState));
+      updateRadarStats();
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerHTML = `<span>⚡</span> ${msg}`;
+      t.style.display = 'flex';
+      setTimeout(() => { t.style.display = 'none'; }, 2200);
+    }
+
+    // ==================== 頁面渲染 ====================
+    function renderAll() {
+      updateHeaderInfo();
+      renderZonesTab();
+      renderWorkersTab();
+      renderExpensesTab();
+      renderToolsTab();
+      renderIssuesTab();
+      updateRadarStats();
+      generateReports();
+    }
+
+    function updateHeaderInfo() {
+      if (!currentSite) return;
+      document.getElementById('site-title-display').innerText = currentSite.name || '恆大新建工程';
+      document.getElementById('site-director-display').innerText = `${currentSite.director || '陳靖宏'}主任 ${currentSite.director_phone || ''}`;
+    }
+
+    // Tab 1: 棟別樓層工序矩陣
+    function renderZonesTab() {
+      const container = document.getElementById('building-cards-container');
+      if (!currentSite || !currentSite.buildings) return;
+      container.innerHTML = '';
+
+      currentSite.buildings.forEach(bldg => {
+        if (activeBldgFilter !== 'ALL' && activeBldgFilter !== bldg.id) return;
+
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl p-3.5 space-y-2.5 border border-slate-800';
+
+        let zonesHtml = '';
+        bldg.zones.forEach(zone => {
+          const key = `${bldg.id}_${zone.id}`;
+          const zState = siteState.zones[key] || { shishi: false, qingjie: false, dianjiao: false, dianjiaoDate: '', bags: 0 };
+
+          const shishiClass = zState.shishi ? 'bg-amber-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-400 font-bold';
+          const qingjieClass = zState.qingjie ? 'bg-blue-600 text-white font-black' : 'bg-slate-800 text-slate-400 font-bold';
+          const dianjiaoClass = zState.dianjiao ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-400 font-bold';
+
+          const roofBadge = zone.roof_alert ? `<span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[9px] px-1 py-0.2 rounded font-bold">🚨 鷹架優先</span>` : '';
+
+          zonesHtml += `
+            <div class="bg-slate-900/80 rounded-xl p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border border-slate-800/80">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-black text-white">${zone.name}</span>
+                <span class="text-[11px] font-mono text-slate-400">(${zone.ping}坪)</span>
+                ${roofBadge}
+                ${zState.dianjiao ? `<span class="text-[10px] text-emerald-400 font-bold">點交於 ${zState.dianjiaoDate}</span>` : ''}
+              </div>
+              <div class="grid grid-cols-3 gap-1.5 w-full sm:w-auto">
+                <button onclick="toggleZoneStep('${bldg.id}', '${zone.id}', 'shishi')" class="touch-btn text-xs px-2.5 py-1.5 rounded-lg border border-slate-700/80 ${shishiClass}">
+                  🔨 打石
+                </button>
+                <button onclick="toggleZoneStep('${bldg.id}', '${zone.id}', 'qingjie')" class="touch-btn text-xs px-2.5 py-1.5 rounded-lg border border-slate-700/80 ${qingjieClass}">
+                  🧹 清潔
+                </button>
+                <button onclick="toggleZoneStep('${bldg.id}', '${zone.id}', 'dianjiao')" class="touch-btn text-xs px-2.5 py-1.5 rounded-lg border border-slate-700/80 ${dianjiaoClass}">
+                  ✅ 點交
+                </button>
+              </div>
+            </div>
+          `;
+        });
+
+        // 樓梯裝袋計數器
+        const stairKey = `${bldg.id}_STAIR`;
+        const stairState = siteState.zones[stairKey] || { bags: 0 };
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-cola-500 text-white font-black text-xs flex items-center justify-center">${bldg.id}</span>
+              <h3 class="text-sm font-black text-white">${bldg.name}</h3>
+              <span class="text-xs text-amber-400 font-mono font-bold">${bldg.total_ping} 坪</span>
+            </div>
+            <!-- 樓梯裝袋計數 -->
+            <div class="flex items-center gap-1.5 bg-slate-900 px-2 py-1 rounded-lg border border-slate-800">
+              <span class="text-[10px] text-slate-400">🪜 樓梯碎石:</span>
+              <button onclick="changeStairBags('${bldg.id}', -5)" class="w-5 h-5 rounded bg-slate-800 text-slate-300 text-xs font-black">-</button>
+              <span class="font-mono font-black text-amber-400 text-xs px-1">${stairState.bags || 0}袋</span>
+              <button onclick="changeStairBags('${bldg.id}', 5)" class="w-5 h-5 rounded bg-slate-800 text-slate-300 text-xs font-black">+</button>
+            </div>
+          </div>
+          <div class="space-y-1.5">
+            ${zonesHtml}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function selectBuilding(bldgId) {
+      activeBldgFilter = bldgId;
+      document.querySelectorAll('.bldg-btn').forEach(btn => {
+        btn.classList.remove('bg-cola-500', 'text-white', 'shadow-lg');
+        btn.classList.add('bg-slate-800', 'text-slate-300');
+      });
+      const activeBtn = document.getElementById(`bldg-btn-${bldgId}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
+        activeBtn.classList.add('bg-cola-500', 'text-white', 'shadow-lg');
+      }
+      renderZonesTab();
+    }
+
+    function toggleZoneStep(bldgId, zoneId, step) {
+      const key = `${bldgId}_${zoneId}`;
+      if (!siteState.zones[key]) {
+        siteState.zones[key] = { shishi: false, qingjie: false, dianjiao: false, dianjiaoDate: '', bags: 0 };
+      }
+      const item = siteState.zones[key];
+      if (step === 'shishi') {
+        item.shishi = !item.shishi;
+      } else if (step === 'qingjie') {
+        item.qingjie = !item.qingjie;
+      } else if (step === 'dianjiao') {
+        item.dianjiao = !item.dianjiao;
+        if (item.dianjiao) {
+          const d = new Date();
+          item.dianjiaoDate = `${d.getMonth()+1}/${d.getDate()}`;
+          item.qingjie = true; // 點交通過必定已清潔
+        } else {
+          item.dianjiaoDate = '';
+        }
+      }
+      saveStateToLocalStorage();
+      renderZonesTab();
+      generateReports();
+      showToast(`${bldgId}棟 ${zoneId} 工序更新完成`);
+    }
+
+    function changeStairBags(bldgId, delta) {
+      const key = `${bldgId}_STAIR`;
+      if (!siteState.zones[key]) siteState.zones[key] = { bags: 0 };
+      siteState.zones[key].bags = Math.max(0, (siteState.zones[key].bags || 0) + delta);
+      saveStateToLocalStorage();
+      renderZonesTab();
+    }
+
+    // Tab 2: 當日出工
+    function renderWorkersTab() {
+      const container = document.getElementById('workers-list-container');
+      container.innerHTML = '';
+
+      if (!siteState.workers || siteState.workers.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-slate-500 text-xs">
+            目前尚未載入當日派工名單。請點擊上方「🔄 重整派工」或點擊「➕ 臨時加人」。
+          </div>
+        `;
+      } else {
+        siteState.workers.forEach((w, idx) => {
+          const card = document.createElement('div');
+          card.className = 'bg-slate-900/90 rounded-xl p-3 border border-slate-800 flex items-center justify-between gap-2';
+
+          const s7Tag = w.s7 ? `<span class="bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[9px] px-1 py-0.5 rounded font-bold">S7支援</span>` : '';
+          
+          card.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-slate-800 text-slate-200 text-xs font-black flex items-center justify-center">${idx + 1}</span>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-sm font-black text-white">${w.name}</span>
+                  ${s7Tag}
+                </div>
+                <div class="text-[11px] text-slate-400 font-mono">
+                  日薪: $<input type="number" step="100" value="${w.default_rate || 2200}" onchange="updateWorkerRate(${idx}, this.value)" class="w-16 bg-transparent text-amber-400 font-black border-b border-slate-700 text-center">
+                </div>
+              </div>
+            </div>
+
+            <!-- 出工切換按鈕組 -->
+            <div class="flex items-center gap-1">
+              <button onclick="setWorkerStatus(${idx}, 1.0, 'normal')" class="px-2.5 py-1.5 rounded-lg text-xs font-bold ${w.work_count === 1.0 ? 'bg-amber-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-400'}">
+                1工
+              </button>
+              <button onclick="setWorkerStatus(${idx}, 0.5, 'half')" class="px-2.5 py-1.5 rounded-lg text-xs font-bold ${w.work_count === 0.5 ? 'bg-blue-600 text-white font-black' : 'bg-slate-800 text-slate-400'}">
+                半天
+              </button>
+              <button onclick="setWorkerStatus(${idx}, 0.0, 'absent')" class="px-2.5 py-1.5 rounded-lg text-xs font-bold ${w.work_count === 0.0 ? 'bg-rose-600 text-white font-black' : 'bg-slate-800 text-slate-400'}">
+                放管
+              </button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      updateWorkersStats();
+    }
+
+    function setWorkerStatus(idx, count, status) {
+      siteState.workers[idx].work_count = count;
+      siteState.workers[idx].status = status;
+      saveStateToLocalStorage();
+      renderWorkersTab();
+      generateReports();
+    }
+
+    function updateWorkerRate(idx, rate) {
+      siteState.workers[idx].default_rate = parseInt(rate) || 2200;
+      saveStateToLocalStorage();
+      updateWorkersStats();
+      generateReports();
+    }
+
+    function updateWorkersStats() {
+      let totalW = 0;
+      let totalWage = 0;
+      (siteState.workers || []).forEach(w => {
+        const cnt = (w.work_count !== undefined) ? w.work_count : 1.0;
+        totalW += cnt;
+        totalWage += cnt * (w.default_rate || 2200);
+      });
+      document.getElementById('today-headcount').innerText = `${totalW.toFixed(1)} 工`;
+      document.getElementById('today-wage-total').innerText = `$${totalWage.toLocaleString()}`;
+
+      // 今日每工坪效
+      const completedCleanPing = getCompletedCleanPing();
+      const prod = totalW > 0 ? (completedCleanPing / totalW).toFixed(1) : '--';
+      document.getElementById('today-productivity').innerText = `${prod} 坪/工`;
+    }
+
+    function promptAddCustomWorker() {
+      const name = prompt('請輸入臨時加派工人的姓名：');
+      if (name && name.trim()) {
+        const rate = prompt('請輸入此名工人的當日日薪：', '2200');
+        siteState.workers.push({
+          name: name.trim(),
+          s7: false,
+          tag: '臨時支援',
+          default_rate: parseInt(rate) || 2200,
+          work_count: 1.0,
+          status: 'normal'
+        });
+        saveStateToLocalStorage();
+        renderWorkersTab();
+        generateReports();
+        showToast(`已加派 ${name.trim()}`);
+      }
+    }
+
+    async function syncLiveDispatch() {
+      const icon = document.getElementById('sync-icon');
+      icon.classList.add('animate-spin');
+      try {
+        const res = await fetch('live_dispatch.json');
+        const data = await res.json();
+        if (data.assigned_workers && data.assigned_workers.length > 0) {
+          siteState.workers = data.assigned_workers;
+        }
+        renderStandbyPool(data.standby_pool || []);
+        saveStateToLocalStorage();
+        renderWorkersTab();
+        showToast('已同步當日派工單名單');
+      } catch (e) {
+        showToast('讀取派工快取失敗');
+      } finally {
+        setTimeout(() => icon.classList.remove('animate-spin'), 600);
+      }
+    }
+
+    function renderStandbyPool(pool) {
+      const container = document.getElementById('standby-pool-chips');
+      document.getElementById('standby-count-hint').innerText = `${pool.length} 人在池`;
+      container.innerHTML = '';
+      pool.forEach(name => {
+        const chip = document.createElement('button');
+        chip.className = 'px-2 py-1 rounded-lg bg-slate-800 hover:bg-cola-500 text-slate-300 hover:text-white text-xs font-bold transition flex items-center gap-1';
+        chip.innerHTML = `<span>＋</span> ${name}`;
+        chip.onclick = () => {
+          siteState.workers.push({
+            name: name,
+            s7: false,
+            tag: '待命調派',
+            default_rate: 2200,
+            work_count: 1.0,
+            status: 'normal'
+          });
+          saveStateToLocalStorage();
+          renderWorkersTab();
+          generateReports();
+          showToast(`已調派 ${name} 至恆大`);
+        };
+        container.appendChild(chip);
+      });
+    }
+
+    // Tab 3: 涼水便當與工具代墊
+    function renderExpensesTab() {
+      // 渲染代墊人選擇按鈕
+      const payersContainer = document.getElementById('payer-buttons-container');
+      const payers = (appConfig && appConfig.payers) ? appConfig.payers : ["亦軍", "紫彤", "紹齊", "領班代墊", "公帳零用金"];
+      payersContainer.innerHTML = '';
+      payers.forEach(p => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `py-2 rounded-xl text-xs font-black border transition ${siteState.selectedPayer === p ? 'bg-cola-500 text-white border-cola-500 shadow-md' : 'bg-slate-800 text-slate-400 border-slate-700'}`;
+        btn.innerText = p;
+        btn.onclick = () => {
+          siteState.selectedPayer = p;
+          renderExpensesTab();
+        };
+        payersContainer.appendChild(btn);
+      });
+
+      // 渲染支出清單
+      const listContainer = document.getElementById('expense-records-list');
+      listContainer.innerHTML = '';
+
+      let totalExp = 0;
+      let payerTotals = {};
+
+      (siteState.expenses || []).forEach((exp, idx) => {
+        totalExp += exp.amount;
+        payerTotals[exp.payer] = (payerTotals[exp.payer] || 0) + exp.amount;
+
+        const row = document.createElement('div');
+        row.className = 'bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between gap-2 text-xs';
+        row.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-black text-white">${exp.name}</span>
+            <span class="px-1.5 py-0.5 rounded bg-slate-800 text-amber-400 font-bold text-[10px]">${exp.payer} 墊</span>
+            <span class="text-[10px] text-slate-500 font-mono">${exp.time || ''}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-mono font-black text-rose-400">$${exp.amount.toLocaleString()}</span>
+            <button onclick="removeExpense(${idx})" class="text-slate-500 hover:text-rose-400 p-1">✕</button>
+          </div>
+        `;
+        listContainer.appendChild(row);
+      });
+
+      document.getElementById('today-expense-total').innerText = `$${totalExp.toLocaleString()}`;
+
+      // 代墊人小計提示
+      const pSummary = Object.entries(payerTotals).map(([p, amt]) => `${p}: $${amt.toLocaleString()}`).join(' · ');
+      document.getElementById('payer-summary-text').innerText = pSummary ? `(代墊小計: ${pSummary})` : '';
+    }
+
+    function setExpenseItem(name, defaultAmt) {
+      document.getElementById('input-exp-name').value = name;
+      if (defaultAmt > 0) {
+        document.getElementById('input-exp-amount').value = defaultAmt;
+      }
+    }
+
+    function addExpenseRecord() {
+      const name = document.getElementById('input-exp-name').value.trim();
+      const amount = parseInt(document.getElementById('input-exp-amount').value) || 0;
+      const payer = siteState.selectedPayer || '亦軍';
+
+      if (!name || amount <= 0) {
+        showToast('請填寫品項名稱與有效金額');
+        return;
+      }
+
+      const d = new Date();
+      const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+
+      siteState.expenses.unshift({
+        id: Date.now(),
+        name: name,
+        amount: amount,
+        payer: payer,
+        time: timeStr
+      });
+
+      // 若買的是平斬或工具，自動同步至工具表
+      if (name.includes('平斬') || name.includes('平鏟') || name.includes('耙') || name.includes('釘器') || name.includes('阿朱力')) {
+        showToast(`已自動將「${name}」同步加入工具清點清單`);
+      }
+
+      document.getElementById('input-exp-name').value = '';
+      document.getElementById('input-exp-amount').value = '';
+
+      saveStateToLocalStorage();
+      renderExpensesTab();
+      generateReports();
+      showToast(`已新增支出 $${amount} (${payer}代墊)`);
+    }
+
+    function removeExpense(idx) {
+      siteState.expenses.splice(idx, 1);
+      saveStateToLocalStorage();
+      renderExpensesTab();
+      generateReports();
+    }
+
+    function handleReceiptPhoto(input) {
+      if (input.files && input.files[0]) {
+        showToast('📸 收據相片已成功暫存，自動關聯至今日代墊！');
+      }
+    }
+
+    // Tab 4: 粗清工具點檢
+    function renderToolsTab() {
+      const tbody = document.getElementById('tools-table-body');
+      tbody.innerHTML = '';
+      const tools = (appConfig && appConfig.common_tools) ? appConfig.common_tools : [];
+
+      tools.forEach(tool => {
+        if (!siteState.toolsCheck[tool.name]) {
+          siteState.toolsCheck[tool.name] = { out: tool.default_qty || 2, back: tool.default_qty || 2, checked: false };
+        }
+        const state = siteState.toolsCheck[tool.name];
+
+        const isMissing = isToolCheckMode && (state.back < state.out);
+        const statusBadge = isMissing ? 
+          `<span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 px-1.5 py-0.5 rounded text-[10px] font-black">少 ${state.out - state.back} ${tool.unit}！</span>` :
+          `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded text-[10px] font-bold">齊全</span>`;
+
+        const tr = document.createElement('tr');
+        tr.className = `hover:bg-slate-800/40 transition ${isMissing ? 'bg-rose-950/20' : ''}`;
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-bold text-white">${tool.name}</td>
+          <td class="py-2.5 px-2 text-center font-mono">
+            <button onclick="changeToolCount('${tool.name}', 'out', -1)" class="w-5 h-5 rounded bg-slate-800 text-slate-300">-</button>
+            <span class="mx-1 text-slate-200">${state.out}</span>
+            <button onclick="changeToolCount('${tool.name}', 'out', 1)" class="w-5 h-5 rounded bg-slate-800 text-slate-300">+</button>
+          </td>
+          <td class="py-2.5 px-2 text-center font-mono text-amber-400">
+            <button onclick="changeToolCount('${tool.name}', 'back', -1)" class="w-5 h-5 rounded bg-slate-800 text-slate-300">-</button>
+            <span class="mx-1 font-black">${state.back}</span>
+            <button onclick="changeToolCount('${tool.name}', 'back', 1)" class="w-5 h-5 rounded bg-slate-800 text-slate-300">+</button>
+          </td>
+          <td class="py-2.5 px-2 text-center">${statusBadge}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function toggleToolMode() {
+      isToolCheckMode = !isToolCheckMode;
+      const btn = document.getElementById('tool-mode-btn');
+      if (isToolCheckMode) {
+        btn.innerText = '🔴 正在收工清點中 (防遺落)';
+        btn.className = 'px-3 py-1.5 rounded-xl bg-rose-500 text-white font-black text-xs shadow-lg shadow-rose-500/25';
+      } else {
+        btn.innerText = '切換：收工清點模式';
+        btn.className = 'px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold';
+      }
+      renderToolsTab();
+    }
+
+    function changeToolCount(name, field, delta) {
+      if (!siteState.toolsCheck[name]) return;
+      siteState.toolsCheck[name][field] = Math.max(0, siteState.toolsCheck[name][field] + delta);
+      saveStateToLocalStorage();
+      renderToolsTab();
+    }
+
+    // Tab 5: 問題快記與 LINE 日報
+    function renderIssuesTab() {
+      // 渲染問題快選標籤
+      const presetsContainer = document.getElementById('issue-presets-container');
+      const presets = (currentSite && currentSite.issue_presets) ? currentSite.issue_presets : [
+        "樓梯碎石超厚手工鏟裝", "他工種佔場暫緩清掃", "地面積水潮濕", "外牆鷹架拆除倒數", "點交後遭二次污染", "營造要求追加工項"
+      ];
+      presetsContainer.innerHTML = '';
+      presets.forEach(p => {
+        const btn = document.createElement('button');
+        btn.className = 'p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold text-left border border-slate-700/80 truncate';
+        btn.innerText = `⚠️ ${p}`;
+        btn.onclick = () => {
+          document.getElementById('input-custom-issue').value = p;
+        };
+        presetsContainer.appendChild(btn);
+      });
+
+      // 渲染已記問題列表
+      const displayContainer = document.getElementById('issues-list-display');
+      displayContainer.innerHTML = '';
+      (siteState.issues || []).forEach((iss, idx) => {
+        const row = document.createElement('div');
+        row.className = 'bg-slate-900 p-2 rounded-xl border border-slate-800 flex items-center justify-between text-xs text-slate-300';
+        row.innerHTML = `
+          <div><span class="text-amber-400 font-bold">[${iss.time}]</span> ${iss.text}</div>
+          <button onclick="removeIssue(${idx})" class="text-slate-500 hover:text-rose-400 p-1">✕</button>
+        `;
+        displayContainer.appendChild(row);
+      });
+    }
+
+    function addIssueRecord() {
+      const txt = document.getElementById('input-custom-issue').value.trim();
+      if (!txt) return;
+      const d = new Date();
+      const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+      siteState.issues.push({ id: Date.now(), text: txt, time: timeStr });
+      document.getElementById('input-custom-issue').value = '';
+      saveStateToLocalStorage();
+      renderIssuesTab();
+      generateReports();
+      showToast('已記錄現場問題');
+    }
+
+    function removeIssue(idx) {
+      siteState.issues.splice(idx, 1);
+      saveStateToLocalStorage();
+      renderIssuesTab();
+      generateReports();
+    }
+
+    // ==================== 統計與日報生成 ====================
+    function getCompletedCleanPing() {
+      let ping = 0;
+      if (!currentSite || !currentSite.buildings) return 0;
+      currentSite.buildings.forEach(bldg => {
+        bldg.zones.forEach(z => {
+          const zState = siteState.zones[`${bldg.id}_${z.id}`];
+          if (zState && (zState.qingjie || zState.dianjiao)) {
+            ping += z.ping;
+          }
+        });
+      });
+      return ping;
+    }
+
+    function updateRadarStats() {
+      const cleanPing = getCompletedCleanPing();
+      const totalPing = (currentSite && currentSite.total_ping) ? currentSite.total_ping : 738.51;
+      const pct = (cleanPing / totalPing * 100).toFixed(1);
+
+      document.getElementById('stat-clean-ping').innerHTML = `${cleanPing.toFixed(1)} <span class="text-[9px] text-slate-400">/ ${totalPing}</span>`;
+      document.getElementById('stat-clean-percent').innerText = `${pct}%`;
+
+      let totalW = 0;
+      (siteState.workers || []).forEach(w => {
+        totalW += (w.work_count !== undefined) ? w.work_count : 1.0;
+      });
+      document.getElementById('stat-total-workers').innerHTML = `${totalW.toFixed(1)} <span class="text-[9px] text-slate-400">工</span>`;
+
+      const prod = totalW > 0 ? (cleanPing / totalW).toFixed(1) : '0.0';
+      const prodEl = document.getElementById('stat-productivity');
+      prodEl.innerHTML = `${prod} <span class="text-[9px] text-slate-400">坪/工</span>`;
+
+      if (parseFloat(prod) >= 12.0) {
+        prodEl.className = 'font-black text-emerald-400 font-mono text-sm';
+      } else if (parseFloat(prod) >= 9.5) {
+        prodEl.className = 'font-black text-blue-400 font-mono text-sm';
+      } else {
+        prodEl.className = 'font-black text-rose-400 font-mono text-sm';
+      }
+    }
+
+    function generateReports() {
+      const now = new Date();
+      const dateStr = `${now.getMonth()+1}/${now.getDate()}`;
+      const cleanPing = getCompletedCleanPing();
+      const totalPing = (currentSite && currentSite.total_ping) ? currentSite.total_ping : 738.51;
+
+      // 整理已完成樓層清單
+      let finishedZones = [];
+      let pendingDianjiao = [];
+      if (currentSite && currentSite.buildings) {
+        currentSite.buildings.forEach(bldg => {
+          bldg.zones.forEach(z => {
+            const zs = siteState.zones[`${bldg.id}_${z.id}`];
+            if (zs && zs.qingjie && !zs.dianjiao) {
+              pendingDianjiao.push(`${bldg.id}棟${z.name}`);
+            } else if (zs && zs.dianjiao) {
+              finishedZones.push(`${bldg.id}棟${z.name}`);
+            }
+          });
+        });
+      }
+
+      // 1. 給陳靖宏主任
+      let clientMsg = `陳主任您好，可樂工程行今日（${dateStr}）恆大新建工程粗清進度回報：\n\n`;
+      if (pendingDianjiao.length > 0) {
+        clientMsg += `1. 今日清潔完工·請主任明日協助現場點交：\n   • ${pendingDianjiao.slice(0, 8).join('、')}\n\n`;
+      } else {
+        clientMsg += `1. 今日施工正常推進中，累計已完成 ${cleanPing.toFixed(1)} 坪。\n\n`;
+      }
+
+      if (siteState.issues && siteState.issues.length > 0) {
+        clientMsg += `2. 現場協調事項：\n`;
+        siteState.issues.forEach(iss => {
+          clientMsg += `   • ${iss.text}\n`;
+        });
+        clientMsg += `\n`;
+      }
+      clientMsg += `謝謝陳主任！可樂工程行敬上`;
+      document.getElementById('report-text-client').value = clientMsg;
+
+      // 2. 內部戰情日報
+      let totalW = 0;
+      let wage = 0;
+      (siteState.workers || []).forEach(w => {
+        const cnt = (w.work_count !== undefined) ? w.work_count : 1.0;
+        totalW += cnt;
+        wage += cnt * (w.default_rate || 2200);
+      });
+
+      let totalExp = 0;
+      (siteState.expenses || []).forEach(e => totalExp += e.amount);
+
+      let internalMsg = `【可樂工程行 · 恆大新建工程 現場戰情日報 ${dateStr}】\n`;
+      internalMsg += `• 當日出工：${totalW.toFixed(1)} 工 (工資約 $${wage.toLocaleString()})\n`;
+      internalMsg += `• 實到名單：${(siteState.workers || []).map(w => `${w.name}(${w.work_count}工)`).join('、')}\n`;
+      internalMsg += `• 累計已清：${cleanPing.toFixed(1)} 坪 / ${totalPing} 坪 (${(cleanPing/totalPing*100).toFixed(1)}%)\n`;
+      internalMsg += `• 目前坪效：${totalW > 0 ? (cleanPing/totalW).toFixed(1) : 0} 坪/工 (目標 ≥12 坪/工)\n`;
+      internalMsg += `• 今日支出：涼水便當/工具代墊共 $${totalExp.toLocaleString()} 元\n`;
+      if (siteState.issues && siteState.issues.length > 0) {
+        internalMsg += `• 現場異常：\n`;
+        siteState.issues.forEach(i => internalMsg += `  - ${i.text}\n`);
+      }
+      document.getElementById('report-text-internal').value = internalMsg;
+    }
+
+    function copyReportText(type) {
+      const el = document.getElementById(type === 'client' ? 'report-text-client' : 'report-text-internal');
+      el.select();
+      navigator.clipboard.writeText(el.value).then(() => {
+        showToast('日報內容已複製到剪貼簿，可直接貼入 LINE！');
+      });
+    }
+
+    // 匯出 JSON 備份
+    function saveAndExportJSON() {
+      saveStateToLocalStorage();
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(siteState, null, 2));
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", dataStr);
+      dlAnchor.setAttribute("download", `site_daily_log_${Date.now()}.json`);
+      dlAnchor.click();
+      showToast('日報 JSON 備份已下載至手機');
+    }
+
+    // Tab 切換控制
+    function switchTab(tabId) {
+      ['zones', 'dispatch', 'expenses', 'tools', 'report'].forEach(t => {
+        const sec = document.getElementById(`tab-${t}`);
+        const btn = document.getElementById(`nav-btn-${t}`);
+        if (t === tabId) {
+          sec.classList.remove('hidden');
+          btn.classList.remove('text-slate-400', 'font-medium');
+          btn.classList.add('text-cola-500', 'font-bold');
+        } else {
+          sec.classList.add('hidden');
+          btn.classList.remove('text-cola-500', 'font-bold');
+          btn.classList.add('text-slate-400', 'font-medium');
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

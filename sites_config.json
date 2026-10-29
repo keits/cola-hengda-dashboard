@@ -1,0 +1,200 @@
+{
+  "version": "1.0.0",
+  "updated_at": "2026-10-29 23:25",
+  "active_site_id": "1151027_hengda",
+  "payers": ["亦軍", "紫彤", "紹齊", "領班代墊", "公帳零用金"],
+  "common_tools": [
+    {"name": "竹掃把", "default_qty": 2, "unit": "支"},
+    {"name": "塑膠掃把+畚箕", "default_qty": 4, "unit": "組"},
+    {"name": "平頭耙", "default_qty": 4, "unit": "支"},
+    {"name": "拔釘器", "default_qty": 4, "unit": "支"},
+    {"name": "平鏟", "default_qty": 4, "unit": "支"},
+    {"name": "彈簧鋼平斬", "default_qty": 10, "unit": "支"},
+    {"name": "鐵鎚", "default_qty": 2, "unit": "支"},
+    {"name": "阿朱力(大桶)", "default_qty": 2, "unit": "個"},
+    {"name": "空桶", "default_qty": 3, "unit": "個"},
+    {"name": "獨輪車", "default_qty": 2, "unit": "台"},
+    {"name": "平板車", "default_qty": 1, "unit": "台"},
+    {"name": "無線切割機", "default_qty": 1, "unit": "台"},
+    {"name": "切割片", "default_qty": 5, "unit": "片"},
+    {"name": "垃圾管道", "default_qty": 1, "unit": "套"},
+    {"name": "米袋", "default_qty": 200, "unit": "只"},
+    {"name": "延長線", "default_qty": 2, "unit": "捲"},
+    {"name": "滑輪吊繩/細繩", "default_qty": 1, "unit": "條"},
+    {"name": "粗布工作手套", "default_qty": 20, "unit": "雙"}
+  ],
+  "safety_gear": [
+    {"name": "安全帽", "required": true},
+    {"name": "反光背心", "required": true},
+    {"name": "防塵口罩", "required": true},
+    {"name": "防護眼鏡", "required": true},
+    {"name": "防滑工作鞋", "required": true},
+    {"name": "急救箱", "required": true},
+    {"name": "工作燈/手電筒", "required": false},
+    {"name": "飲用水/保溫桶", "required": true}
+  ],
+  "sites": {
+    "1151027_hengda": {
+      "id": "1151027_hengda",
+      "name": "恆大新建住宅工程（天佑段）",
+      "client_name": "泗維營造工程有限公司",
+      "director": "陳靖宏",
+      "director_phone": "0988-623319",
+      "location": "花蓮縣新城鄉天佑段 650-1 地號",
+      "total_ping": 738.51,
+      "total_sqm": 2441.34,
+      "quote_unit_price": 400,
+      "clean_quote_subtotal": 295404,
+      "waste_truck_count": 10,
+      "waste_truck_price": 4500,
+      "waste_subtotal": 45000,
+      "grand_total": 340404,
+      "target_productivity": 12.0,
+      "notion_eng_id": "40617b47-4971-8025-8166-cc9914ca8add",
+      "notion_junp_id": "40617b47-4971-801f-b82f-c660e8701975",
+      "local_folder": "D:\\googledrive\\可樂工程行共用資料夾\\hermes可樂工程行資料夾\\1151027 恆大粗清資料",
+      "buildings": [
+        {
+          "id": "A",
+          "name": "A棟 (A型大戶)",
+          "total_ping": 79.53,
+          "zones": [
+            {"id": "RF", "name": "RF屋頂平頂", "ping": 16.40, "roof_alert": true},
+            {"id": "3F", "name": "3F (含陽台)", "ping": 18.05},
+            {"id": "2F", "name": "2F (含陽台)", "ping": 18.05},
+            {"id": "1F", "name": "1F 室內", "ping": 20.50},
+            {"id": "yard", "name": "1F 後院空地", "ping": 6.53}
+          ]
+        },
+        {
+          "id": "B",
+          "name": "B棟 (A型中戶)",
+          "total_ping": 80.39,
+          "zones": [
+            {"id": "RF", "name": "RF屋頂平頂", "ping": 16.40, "roof_alert": true},
+            {"id": "3F", "name": "3F (含陽台)", "ping": 18.05},
+            {"id": "2F", "name": "2F (含陽台)", "ping": 18.05},
+            {"id": "1F", "name": "1F 室內", "ping": 20.50},
+            {"id": "yard", "name": "1F 後院空地", "ping": 7.39}
+          ]
+        },
+        {
+          "id": "C",
+          "name": "C棟 (A型深院)",
+          "total_ping": 81.24,
+          "zones": [
+            {"id": "RF", "name": "RF屋頂平頂", "ping": 16.40, "roof_alert": true},
+            {"id": "3F", "name": "3F (含陽台)", "ping": 18.05},
+            {"id": "2F", "name": "2F (含陽台)", "ping": 18.05},
+            {"id": "1F", "name": "1F 室內", "ping": 20.50},
+            {"id": "yard", "name": "1F 後院空地", "ping": 8.24}
+          ]
+        },
+        {
+          "id": "D",
+          "name": "D棟 (B型標準)",
+          "total_ping": 62.17,
+          "zones": [
+            {"id": "RF", "name": "RF屋頂平頂", "ping": 13.13, "roof_alert": true},
+            {"id": "3F", "name": "3F (含陽台)", "ping": 14.66},
+            {"id": "2F", "name": "2F (含陽台)", "ping": 14.66},
+            {"id": "1F", "name": "1F 室內", "ping": 15.25},
+            {"id": "yard", "name": "1F 後院空地", "ping": 4.47}
+          ]
+        },
+        {
+          "id": "E",
+          "name": "E棟 (B型標準)",
+          "total_ping": 61.61,
+          "zones": [
+            {"id": "RF", "name": "RF屋頂平頂", "ping": 13.13, "roof_alert": true},
+            {"id": "3F", "name": "3F (含陽台)", "ping": 14.66},
+            {"id": "2F", "name": "2F (含陽台)", "ping": 14.66},
+            {"id": "1F", "name": "1F 室內", "ping": 15.25},
+            {"id": "yard", "name": "1F 後院空地", "ping": 3.91}
+          ]
+        },
+        {
+          "id": "F",
+          "name": "F棟 (B型標準)",
+          "total_ping": 61.06,
+          "zones": [
+            {"id": "RF", "name": "RF屋頂平頂", "ping": 13.13, "roof_alert": true},
+            {"id": "3F", "name": "3F (含陽台)", "ping": 14.66},
+            {"id": "2F", "name": "2F (含陽台)", "ping": 14.66},
+            {"id": "1F", "name": "1F 室內", "ping": 15.25},
+            {"id": "yard", "name": "1F 後院空地", "ping": 3.36}
+          ]
+        },
+        {
+          "id": "G",
+          "name": "G棟 (C型連棟)",
+          "total_ping": 61.27,
+          "zones": [
+            {"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true},
+            {"id": "3F", "name": "3F (含陽台)", "ping": 14.92},
+            {"id": "2F", "name": "2F (含陽台)", "ping": 14.92},
+            {"id": "1F", "name": "1F 室內", "ping": 15.35},
+            {"id": "yard", "name": "1F 後院空地", "ping": 2.71}
+          ]
+        },
+        {
+          "id": "H",
+          "name": "H棟 (C型連棟)",
+          "total_ping": 60.76,
+          "zones": [
+            {"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true},
+            {"id": "3F", "name": "3F (含陽台)", "ping": 14.92},
+            {"id": "2F", "name": "2F (含陽台)", "ping": 14.92},
+            {"id": "1F", "name": "1F 室內", "ping": 15.35},
+            {"id": "yard", "name": "1F 後院空地", "ping": 2.20}
+          ]
+        },
+        {
+          "id": "I",
+          "name": "I棟 (C型連棟)",
+          "total_ping": 60.13,
+          "zones": [
+            {"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true},
+            {"id": "3F", "name": "3F (含陽台)", "ping": 14.92},
+            {"id": "2F", "name": "2F (含陽台)", "ping": 14.92},
+            {"id": "1F", "name": "1F 室內", "ping": 15.35},
+            {"id": "yard", "name": "1F 後院空地", "ping": 1.57}
+          ]
+        },
+        {
+          "id": "J",
+          "name": "J棟 (C型連棟)",
+          "total_ping": 59.49,
+          "zones": [
+            {"id": "RF", "name": "RF屋頂平頂", "ping": 13.37, "roof_alert": true},
+            {"id": "3F", "name": "3F (含陽台)", "ping": 14.92},
+            {"id": "2F", "name": "2F (含陽台)", "ping": 14.92},
+            {"id": "1F", "name": "1F 室內", "ping": 15.35},
+            {"id": "yard", "name": "1F 後院空地", "ping": 0.93}
+          ]
+        },
+        {
+          "id": "K",
+          "name": "K棟 (D型邊間)",
+          "total_ping": 65.10,
+          "zones": [
+            {"id": "RF", "name": "RF屋頂平頂", "ping": 15.34, "roof_alert": true},
+            {"id": "3F", "name": "3F (含陽台)", "ping": 16.87},
+            {"id": "2F", "name": "2F (含陽台)", "ping": 16.87},
+            {"id": "1F", "name": "1F 室內", "ping": 15.35},
+            {"id": "yard", "name": "1F 後院空地", "ping": 0.67}
+          ]
+        }
+      ],
+      "issue_presets": [
+        "樓梯碎石超厚，需手工鏟裝麻袋（無法直接掃把掃）",
+        "3F通往RF屋頂無室內樓梯，搶在外牆鷹架拆除前進場吊料",
+        "水電/泥作工種佔場作業中，部分樓層暫緩清掃",
+        "地面試水積水或嚴重返潮，需抽乾/晾乾後再掃",
+        "粗清點交完畢後遭其他工種二次污染，已拍照存證不負二次免費清理責任",
+        "營造廠現場要求追加非合約工項（需記點工另計）"
+      ]
+    }
+  }
+}
