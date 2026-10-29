@@ -1315,8 +1315,7 @@
       // 動態契約與責任條款
       let contractRulesText = '';
       if (site.contract_rules && site.contract_rules.length > 0) {
-        contractRulesText = site.contract_rules.map(r => `• ${r}`).join('
-');
+        contractRulesText = site.contract_rules.map(r => `• ${r}`).join(String.fromCharCode(10));
       } else {
         contractRulesText = '• 依合約標準粗清規範驗收點交，動線保持通暢。';
       }
@@ -1326,8 +1325,7 @@
 會同監造：${site.director || '主任'} ${site.director_phone ? '(' + site.director_phone + ')' : ''}
 ─────────────────────
 一、今日分區施作與點交進度 (${zoneLabel || '全工區'})：
-${floorStatusLines.join('
-')}
+${floorStatusLines.join(String.fromCharCode(10))}
 
 • 🎉 全棟所有工區點交驗收完畢：
   ${fullVerifiedBuildings.length > 0 ? fullVerifiedBuildings.join('、') + ' 棟' : '逐步點交中'} (累計 ${fullVerifiedBuildings.length}/${bKeys.length} 棟全棟點交)
@@ -1350,13 +1348,11 @@ ${siteState.memo ? siteState.memo : '現場水電正常，施工動線通暢無�
 • 出勤人員：${workerNames}
 
 二、各樓層工區推進實況：
-${floorStatusLines.join('
-')}
+${floorStatusLines.join(String.fromCharCode(10))}
 • 全棟完工點交鎖定：${fullVerifiedBuildings.length > 0 ? fullVerifiedBuildings.join('、') + ' 棟' : '無'} (共 ${fullVerifiedBuildings.length}/${bKeys.length} 棟)
 
 三、現場代墊零碎雜支 (總計 $${totalExpense.toLocaleString()} 元)：
-${expDetails.length > 0 ? expDetails.map(d => '• ' + d).join('
-') : '• 無現場代墊款'}
+${expDetails.length > 0 ? expDetails.map(d => '• ' + d).join(String.fromCharCode(10)) : '• 無現場代墊款'}
 
 四、工具清點與收工自檢：
 • 儀器工具收工：${siteState.tool_check_mode ? '✅ 已清點完畢無遺失' : '⏳ 尚未執行收工清點'}
